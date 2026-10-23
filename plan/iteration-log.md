@@ -62,3 +62,20 @@
 - Limpieza: servidor/gateway y contenedor Mongo de prueba propios retirados. Sin modificar credenciales ni datos del usuario.
 - Publicación: commit y push en `int` con verificación remota al cierre; `main` permanece humano. SHA real comunicado al usuario tras publicar.
 - Próximo paso: revisión humana de `int`; el producto de destino sigue pendiente de definición en `01`.
+
+## 04 — Navegación responsive y ajustes · 2026-10-23
+
+- Estado: `validated`.
+- Petición humana: adaptar el patrón de navegación inferior móvil/superior escritorio de referencia, inicialmente solo con Ajustes, usuario y tema.
+- Implementación: `AppShell` compartido en el layout protegido, único registro de destinos, avatar de iniciales, estado activo `aria-current`, barra inferior con safe area y reserva de contenido; barra superior sticky desde 768px. Sin nuevas pestañas de producto.
+- Ajustes: `/settings` protegido, nombre/correo/rol de sesión desde servidor, cambio de cuenta reutilizado y enlace a administración solo para administradores. Se conservan el inicio y administración existentes.
+- Tema: Sistema/Claro/Oscuro, esquema compartido Zod, preferencia local con clave neutral `webapp:theme:v1`, bootstrap antes de hidratación y variante CSS dark coherente con la selección. Sistema sigue CSS del dispositivo; almacenamiento bloqueado conserva el cambio en memoria y muestra aviso. Sin persistencia de tema en Mongo ni dependencias nuevas.
+- Referencia: se adapta el patrón autorizado de navegación/tema; no se trasladan destinos, branding, claves ni funcionalidades del producto de referencia.
+- Unitarias: 37 aprobadas, 0 fallos, 93 aserciones. Tres comprobaciones nuevas cubren valores corruptos, inicialización antes de montar React y almacenamiento bloqueado.
+- Validación: lint sin errores ni warnings (los cinco informativos de estilo anteriores no se modifican), tipos, `bun run build --webpack`, enlaces locales y `git diff --check` aprobados. No se cambia el bundler por defecto; alternativa ya documentada para este entorno.
+- HTTP Next compilado + Mongo propio: regresión de acceso/solicitudes aprobada; nuevas comprobaciones de `/settings` para admin/usuario/anónimo, identidad correcta, estado activo y enlace admin condicionado al rol.
+- UI real: navegación inicio→Ajustes, Claro/Oscuro/Sistema, persistencia oscura tras recargar y sincronización entre dos pestañas de Ajustes aprobadas. Móvil 390px sin overflow, barra inferior de 89px y controles fuera de su área; escritorio 1280px con barra sticky en top 0. Usuario normal sin enlace admin. No se ha modificado la preferencia del sistema operativo para simular otro esquema.
+- Evidencia fuera de Git: `/private/tmp/template-settings-mobile-light.png`, `/private/tmp/template-settings-mobile-dark.png`, `/private/tmp/template-settings-desktop.png`. Identidades/cookies y Mongo exclusivamente ficticios/propios; sin login Google interactivo.
+- Limpieza: viewport restaurado, dos pestañas propias cerradas, servidor/gateway y contenedor Mongo propios retirados. Pestaña preexistente del usuario conservada.
+- Publicación: commit/push en `int` y verificación del SHA remoto al cierre; `main` exclusivamente humano. Sin hashes anticipados.
+- Próximo paso: revisión humana de `int`; producto de destino pendiente de definición en `01`.

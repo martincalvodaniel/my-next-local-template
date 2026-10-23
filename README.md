@@ -45,12 +45,20 @@ Abre [localhost:3000](http://localhost:3000). La ruta `/` requiere sesión y red
 ## Convertir la plantilla en una aplicación
 
 1. Crea el repositorio de destino y configura su remoto e historial según tus necesidades.
-2. Cambia `name` en `package.json` y actualiza `bun.lock` con Bun. Adapta la marca en `src/app/layout.tsx`, `src/features/home/components/home-screen.tsx`, `src/features/auth/components/sign-in-card.tsx` y el favicon. Añade los recursos de marca propios en `public/` cuando los necesites.
+2. Cambia `name` en `package.json` y actualiza `bun.lock` con Bun. Adapta la marca en `src/app/layout.tsx`, `src/features/home/components/home-screen.tsx`, `src/components/shared/app-navigation.tsx`, `src/features/auth/components/sign-in-card.tsx` y el favicon. Añade los recursos de marca propios en `public/` cuando los necesites.
 3. Define el idioma del producto y alinea `lang` y todos los textos de interfaz. Actualmente `lang` es `es` y las pantallas iniciales combinan textos en inglés y español; no hay un sistema de traducciones.
 4. Crea secretos y credenciales OAuth propios. Configura al menos un administrador en `ALLOWED_EMAILS` y una base de datos independiente; no reutilices datos ni credenciales del repositorio de origen.
 5. Completa [el plan del producto](plan/master.md) y la iteración `01` en [el orden de entregas](plan/iterations.md) antes de desarrollar funcionalidades.
 6. Implementa el dominio bajo `src/features/<feature>/`, valida entradas con esquemas compartidos y registra colecciones e índices junto con las consultas que los necesitan.
 7. Configura hosting, variables y verificaciones del entorno de destino. El flujo autoriza commit y push a `origin/int`; el merge y push de `main` corresponden al usuario. Hosting, producción y automatizaciones requieren su configuración y autorización específicas.
+
+## Navegación y ajustes
+
+Las rutas autorizadas comparten una barra inferior en móvil y superior desde 768px. Por ahora, el único destino es **Ajustes** (`/settings`), con avatar de iniciales y estado activo accesible. Los destinos se definen una sola vez en `src/config/navigation.ts`. La barra móvil respeta el área segura y el contenido reserva espacio para no quedar cubierto.
+
+Ajustes muestra el nombre, correo y rol de la sesión verificada y autorizada. Incluye cambio de cuenta y, para administradores, enlace a la gestión del sitio. La ruta mantiene las comprobaciones de autorización en servidor.
+
+El selector **Tema** ofrece Sistema, Claro y Oscuro. La preferencia se guarda en este navegador, no en MongoDB ni en la cuenta, con la clave `webapp:theme:v1`. Se aplica antes de hidratar React y se sincroniza entre pestañas del mismo origen que tengan Ajustes abierto. Sistema sigue la preferencia del dispositivo mediante CSS; si el almacenamiento está bloqueado, el cambio sigue funcionando y se informa de que no se conservará. Al reutilizar la plantilla, puedes personalizar la clave y el evento en `src/config/theme.ts`.
 
 ## Administración y acceso
 

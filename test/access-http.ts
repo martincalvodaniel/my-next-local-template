@@ -120,6 +120,13 @@ try {
   assert.equal(adminResponse.status, 200)
   const adminHtml = await adminResponse.text()
   assert.ok(adminHtml.includes("Administración del sitio"))
+  const adminSettings = await request("/settings", admin)
+  assert.equal(adminSettings.status, 200)
+  const adminSettingsHtml = await adminSettings.text()
+  assert.ok(adminSettingsHtml.includes("admin@example.com"))
+  assert.ok(adminSettingsHtml.includes('href="/admin"'))
+  assert.ok(adminSettingsHtml.includes('aria-current="page"'))
+  assert.equal((await request("/settings")).status, 307)
   assert.ok(
     (await request("/admin", unverifiedAdmin)).headers
       .get("location")
@@ -139,6 +146,11 @@ try {
   const homeHtml = await home.text()
   assert.ok(homeHtml.includes("usuario"))
   assert.ok(!homeHtml.includes('href="/admin"'))
+  const userSettings = await request("/settings", user)
+  assert.equal(userSettings.status, 200)
+  const userSettingsHtml = await userSettings.text()
+  assert.ok(userSettingsHtml.includes("normal@example.com"))
+  assert.ok(!userSettingsHtml.includes('href="/admin"'))
   assert.equal((await request("/admin", user)).headers.get("location"), "/")
   await request(
     "/admin",

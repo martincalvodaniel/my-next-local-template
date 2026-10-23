@@ -42,3 +42,7 @@ La autorización humana redefine `ALLOWED_EMAILS` como lista de administradores.
 ## Solicitudes implementadas en 03
 
 Una identidad Google verificada sin permiso puede crear su propia solicitud desde `/auth/access`; no obtiene autorización de aplicación. Administración lista las pendientes y permite aceptar o rechazar. El estado vive junto al permiso en `user_access`, de modo que aceptar y conceder acceso normal es una única escritura condicional por correo/UUID/estado pendiente. Los registros anteriores sin estado siguen aprobados. Repetir una petición pendiente conserva su UUID; reenviar tras rechazo genera otro y una decisión antigua no puede aplicarse a él. No hay envío de correos ni promoción a administrador.
+
+## Navegación y ajustes implementados en 04
+
+Las rutas protegidas comparten una única navegación responsive: inferior con safe area en móvil y superior desde 768px. Ajustes es el único destino por ahora, con iniciales de la cuenta y estado activo. `/settings` muestra identidad y rol del servidor, cambio de cuenta, acceso a administración solo para administradores y selector Sistema/Claro/Oscuro. El tema es una preferencia local del navegador, validada y aplicada antes de hidratación; no introduce persistencia Mongo ni dependencias. Se toma el patrón de referencia autorizado sin copiar su dominio ni sus claves de almacenamiento.

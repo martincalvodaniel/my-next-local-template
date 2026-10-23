@@ -52,3 +52,13 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Diseño: extender `user_access` con estado y UUID de solicitud. Un solo documento hace atómica la aceptación y la concesión, sin exigir transacciones multirregistro ni réplica Mongo. Los documentos previos sin estado conservan acceso.
 - Validación: contratos/servicios, Mongo aislado con carreras y compatibilidad, Next compilado con cookies propias, UI móvil/escritorio, lint, tipos, build y diff.
 - Cierre: commit/push en `int` y verificación del SHA remoto; `main` exclusivamente humano.
+
+## 04 — Navegación responsive y ajustes
+
+- Estado: `validated`.
+- Objetivo: navegación inferior móvil y superior escritorio con Ajustes como único destino; mostrar usuario y selector Claro/Oscuro/Sistema siguiendo el patrón de referencia autorizado.
+- `target_paths`: `src/components/shared/**`, `src/config/{navigation,theme}.ts`, `src/lib/theme/**`, `src/schemas/theme.ts`, `src/features/settings/**`, `src/app/layout.tsx`, `src/app/globals.css`, `src/app/(dashboard)/layout.tsx`, `src/app/(dashboard)/settings/page.tsx`, `test/access-http.ts`, `README.md`, `plan/**`.
+- Dependencias: sesión autorizada existente; sin nuevas dependencias ni consultas Mongo.
+- Aceptación: un único registro de destinos, estado activo accesible, safe areas y contenido libre de solapamientos; ajustes protegidos con identidad/rol del servidor; tema persistente local, sistema dinámico y arranque anterior a hidratación; enlace admin solo para administradores.
+- Validación: pruebas de tema/arranque, lint, tipos, suite, build y navegación/interacción móvil/escritorio con identidad ficticia.
+- Cierre: commit/push en `int` con verificación remota.
