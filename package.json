@@ -1,10 +1,10 @@
 {
-  "name": "nextjs",
+  "name": "my-next-template",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "build": "next build",
-    "db:ensure-indexes": "bun run scripts/ensure-indexes.ts",
+    "db:ensure-indexes": "bun --conditions=react-server run scripts/ensure-indexes.ts",
     "dev": "next dev",
     "format": "biome format --write",
     "knip": "knip",

@@ -41,7 +41,7 @@ describe("MongoDB index specifications", () => {
         options: { name: "created_at_desc" },
       },
       {
-        collection: "tasks",
+        collection: "records",
         keys: { createdAt: -1 },
         options: { name: "created_at_desc" },
       },
@@ -67,9 +67,9 @@ describe("MongoDB index specifications", () => {
         options: { name: "created_at_desc" },
       },
       {
-        collection: "tasks",
-        keys: { ownerId: 1, dueAt: 1 },
-        options: { name: "owner_id_asc_due_at_asc" },
+        collection: "records",
+        keys: { ownerId: 1, updatedAt: 1 },
+        options: { name: "owner_id_asc_updated_at_asc" },
       },
     ]
 
@@ -77,7 +77,7 @@ describe("MongoDB index specifications", () => {
 
     expect(calls).toEqual([
       { collection: "items", name: "created_at_desc" },
-      { collection: "tasks", name: "owner_id_asc_due_at_asc" },
+      { collection: "records", name: "owner_id_asc_updated_at_asc" },
     ])
   })
 })

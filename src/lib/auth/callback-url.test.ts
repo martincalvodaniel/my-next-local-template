@@ -3,8 +3,8 @@ import { getSafeCallbackUrl } from "./callback-url"
 
 describe("getSafeCallbackUrl", () => {
   test("keeps internal paths", () => {
-    expect(getSafeCallbackUrl("/household?tab=tasks")).toBe(
-      "/household?tab=tasks"
+    expect(getSafeCallbackUrl("/dashboard?tab=overview")).toBe(
+      "/dashboard?tab=overview"
     )
   })
 

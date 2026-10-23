@@ -4,104 +4,95 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-## Tech Stack (Authoritative)
-- `next@16`, `react@19`, `react-dom@19` — App Router, Server Components, Server Actions
-- `better-auth` — authentication (server config + browser client)
-- `mongodb` (native driver, **no ODM / no Mongoose**) — data layer
-- `server-only` — enforce the server/client boundary
-- `swr` — client-side data fetching
-- `zod` — schema validation (shared client/server)
-- **TypeScript** is mandatory across the codebase.
+# Agent Instructions
 
-Do not introduce new core dependencies (ORMs, state libraries, UI kits, alternative auth/data solutions) without explicit human approval.
+## Scope and Language
 
-## Target Architecture (Baseline)
-This is the **baseline**, not a rigid contract. Deviate only when justified by real code, and document the rationale.
+- This repository is a reusable webapp starter. Do not infer a product domain, roadmap, infrastructure, or permissions from its Git ancestry or a neighboring repository.
+- All generated or edited code, identifiers, code comments, technical error messages, and commit messages must be in English.
+- Communicate with the user in their language. README and product planning may be in Spanish.
+- Set the product UI language in `plan/master.md` when creating an application. Keep visible copy, validation messages, accessibility text, and HTML `lang` consistent with that decision. The starter currently has mixed English/Spanish copy; do not treat that as a localization system.
+- Read applicable nested `AGENTS.md` files before editing their directories. Nested rules add scoped constraints without weakening root boundaries.
+
+## Iteration Workflow
+
+1. Read `plan/master.md`, `plan/workflow.md`, the relevant entry in `plan/iterations.md`, and recent entries in `plan/iteration-log.md`.
+2. Inspect the current branch and worktree. Preserve unrelated user changes and do not switch branches without a task-related reason and authorization.
+3. Before a non-trivial edit, define the goal, `target_paths`, dependencies, acceptance criteria, and validation scope. Record the iteration in the plan; small fixes may use a compact entry.
+4. Execute the smallest coherent delivery that satisfies the authorized request. Resolve routine implementation choices autonomously; document architecture deviations with evidence and rationale.
+5. Update the iteration status and append validation evidence, limitations, and the next step to the log. A blocked check is not a passing check; never label an iteration validated while required acceptance checks remain unresolved.
+6. Review the final diff for scope, secrets, and unrelated changes. Follow `plan/workflow.md` for closure and any explicitly authorized commit/publication.
+7. Report what changed, what was verified, and any remaining limitation. On interruption, leave a precise resumption point instead of claiming completion.
+
+Default to sequential work. Spawn subagents only when the user or applicable instructions explicitly authorize delegation. Assign disjoint `target_paths`, name an integration owner, and remind workers that they are not alone and must preserve others' edits. Shared schemas, lockfiles, package scripts, index registration, and planning integration have one owner. Agent completion does not replace integrated validation.
+
+## Authoritative Stack
+
+- Next.js 16 App Router, React 19, React DOM 19, and TypeScript.
+- Better Auth for Google authentication; the current configuration has no persistent database adapter.
+- Native `mongodb` driver, `server-only`, SWR, and Zod.
+- Tailwind CSS 4, Biome, and Bun for package management and tests.
+- Exact versions belong to `package.json` and `bun.lock`. Use `bun install --frozen-lockfile` for a reproducible installation. Keep Bun as the single lockfile source.
+- Do not introduce core dependencies, an ORM, a state library, a UI kit, or alternative auth/data solutions without explicit human approval. PDF support is not installed; evaluate it only for a concrete requirement.
+
+## Architecture and Boundaries
 
 ```text
-src/
-├── app/                          # ROUTING ONLY
-│   ├── (auth)/                   # auth route group
-│   ├── (dashboard)/              # protected route group (session check in layout)
-│   └── api/
-│       ├── auth/[...all]/route.ts
-│       └── pdf/route.ts
-├── components/
-│   ├── ui/                       # generic primitives
-│   └── shared/                   # layout-level components
-├── features/                     # domain-driven modules
-│   └── <feature>/
-│       ├── components/
-│       ├── hooks/                # client-side, SWR
-│       └── actions.ts            # "use server"
-├── lib/
-│   ├── auth/
-│   │   ├── auth.ts               # server ("server-only")
-│   │   └── auth-client.ts        # browser
-│   ├── db/
-│   │   ├── client.ts             # MongoDB singleton ("server-only")
-│   │   └── collections.ts
-│   ├── pdf/
-│   │   └── generate.ts           # pdf-lib ("server-only")
-│   └── utils.ts
-├── schemas/                      # zod, shared
-├── types/
-├── hooks/                        # global client hooks
-└── config/                       # constants + typed env access
+src/app/                         Routing primitives only
+src/components/{ui,shared}/      Reusable primitives and layout components
+src/features/<feature>/          Domain components, hooks, services, actions.ts
+src/lib/auth/                    Server auth, authorization, browser client
+src/lib/db/                      Native MongoDB data layer and repositories
+src/config/                      Constants and typed environment access
+src/schemas/                     Shared Zod schemas, created when needed
+src/types/                       Shared runtime-agnostic types, created when needed
+src/hooks/                       Global client hooks, created when needed
 ```
 
-## Boundary Rules (Non-Negotiable)
-- `lib/db/**`, `lib/pdf/**`, and server-side auth (`lib/auth/auth.ts`) MUST start with `import 'server-only'`.
-- `schemas/**` and `types/**` MUST stay framework- and runtime-agnostic (importable from client and server).
-- `swr` hooks and `auth-client.ts` are client-only and MUST carry `"use client"` where applicable.
-- `app/**` is reserved for routing primitives (`page`, `layout`, `loading`, `error`, `route`); business logic lives in `features/**` or `lib/**`.
-- MongoDB connection MUST use a **singleton pattern** to survive hot reloads and serverless invocations. Never open a new connection per request.
+- `app/**` contains routing primitives (`page`, `layout`, `loading`, `error`, `not-found`, `route`) and their thin composition. Put business logic in `features/**` or `lib/**`.
+- Prefer Server Components and Server Actions. Use SWR only for interactive client-driven fetching, polling, optimistic updates, or revalidation.
+- Every runtime module in `lib/db/**` and server-side auth must begin with `import "server-only"`. The browser auth client and SWR hooks must be client-only with `"use client"` where applicable.
+- Shared `schemas/**` and `types/**` must be framework- and runtime-agnostic. Do not expose MongoDB types or server-only imports to them.
+- Read environment variables only through `config/**`; never access `process.env` directly from features or components.
+- Use `@/*` mapped to `src/*`; avoid deep relative imports. Use kebab-case filenames/folders, PascalCase components, and camelCase functions/variables.
 
-## Coding Conventions
-- **Server-first**: prefer Server Components and Server Actions. Use `swr` only for interactive/client-driven data (polling, optimistic updates, revalidation).
-- **Validation**: every Server Action and route handler that accepts input MUST validate it with a `zod` schema from `schemas/**`. Do not duplicate validation logic.
-- **Mutations**: implement via Server Actions in `features/<feature>/actions.ts` marked `"use server"`.
-- **Path alias**: use `@/*` mapped to `src/*`. Avoid deep relative imports (`../../../`).
-- **PDF generation**: keep all `pdf-lib` logic in `lib/pdf/**` (server-only) and expose it via a route handler or Server Action — never bundle it client-side.
-- **Naming**: `kebab-case` for files/folders, `PascalCase` for components, `camelCase` for functions/variables.
-- **Env vars**: access only through `config/**`; never read `process.env` directly inside components or features.
-- **MongoDB indexes**: when a feature adds a collection or a new query, sort, lookup, or uniqueness pattern, evaluate its index needs in the same change and register required indexes in `src/lib/db/ensure-indexes.ts`. Never create indexes ad hoc.
+## Components and UI
 
-## Component Extraction Policy
-- **No inline components.** Define components in their own files instead of declaring them inline within other components.
-- **Scope by reuse:** if a component is tightly coupled to a specific context, colocate it within that feature/context (`features/<feature>/components/**`). If it is generic and reusable, place it in the shared components folder (`components/ui/**` or `components/shared/**`).
-- **Reuse first:** before creating a new component, search for an existing one that fits the need and reuse it whenever possible.
+- Search for reusable components before adding one.
+- Define each component in its own file; do not declare components inside other components or inline in unrelated modules.
+- Keep domain components under `features/<feature>/components/**`; generic components belong in `components/ui/**` or `components/shared/**`.
+- Build responsive, mobile-first screens with accessible labels, keyboard support, visible focus, usable touch targets, and no fixed content covering controls.
+- Choose navigation based on the actual product; do not predefine destinations or product-specific navigation patterns in the starter.
 
-## Security & Data
-- Never log secrets, tokens, or PII.
-- Never commit `.env*` files or credentials.
-- Enforce auth checks in protected route group layouts, not only on the client.
-- Treat all external input as untrusted until validated by `zod`.
-## Agent Workflow
-1. **Plan before code**: for any non-trivial task, outline the change, affected paths, and dependencies first.
-2. **Scope discipline**: only modify files relevant to the task. Do not perform unrelated refactors.
-3. **Parallel-safe edits**: if multiple subagents run concurrently, no two may write the same file. Partition work by `target_paths`.
-4. **Small, coherent changes**: keep diffs reviewable; one logical concern per change.
-5. **Document deviations**: if you depart from the baseline architecture, state why in the PR/description and in code comments where helpful.
+## Validation, Authentication, and Data
+
+- Validate every application-controlled input to a Server Action or route handler with a shared Zod schema from `schemas/**`, including query parameters and identifiers. Third-party protocol handlers such as Better Auth own their protocol validation; do not replace their parsing with a duplicate contract.
+- Implement application mutations in `features/<feature>/actions.ts` with `"use server"`; delegate persistence to the data layer.
+- Check sessions in protected layouts and authorize each data access and mutation at its server entry point. Layouts and proxy redirects alone do not protect Server Actions or API handlers.
+- The proxy only checks cookie presence. Never treat that as validated identity or permissions.
+- Keep the deny-by-default email allowlist unless the user explicitly chooses another access policy. Do not silently change cookie/session persistence, lifetimes, or authentication strategy.
+- Only `lib/db/**` imports the MongoDB driver. Use its singleton, collection registry, and repository functions; never create connections per request.
+- Evaluate indexes whenever introducing a collection or query/sort/lookup/uniqueness pattern. Register required indexes in `src/lib/db/ensure-indexes.ts`, never ad hoc.
+- Never log or commit secrets, tokens, credentials, or personal data. `.env.example` is the only tracked environment template and must contain placeholders only.
+- Use isolated resources for integration tests and clean up only resources owned by the test. Do not run database commands against user or production data implicitly.
 
 ## Definition of Done
-- [ ] Code placed at the correct target path with the right boundary directive (`server-only` / `"use client"`).
-- [ ] All imports updated; no broken references; uses `@/*` alias.
-- [ ] Components extracted to their own files and correctly scoped (feature-local vs shared); existing components reused where applicable.
-- [ ] Input validated with `zod` schemas from `schemas/**`.
-- [ ] MongoDB access goes through the singleton.
-- [ ] `tsc --noEmit` passes (no type errors).
-- [ ] `next build` succeeds with **no client/server import leaks** (no `server-only` module reachable from a client component).
-- [ ] No secrets or `.env*` introduced into version control.
 
-## What NOT to Do
-- Do not put business logic, DB access, or PDF logic inside `app/**`.
-- Do not import `lib/db`, `lib/pdf`, or server auth from client components.
-- Do not declare inline components or duplicate components that already exist.
-- Do not add an ORM or replace the native MongoDB driver.
-- Do not bypass `zod` validation on inputs.
-- Do not introduce new top-level dependencies without approval.
-- Do not reveal or hardcode secrets.
+For code, configuration, or package changes:
 
-## When in Doubt
-Prefer the **server-first**, **boundary-safe**, **validated** option. If a decision materially changes architecture, dependencies, or security posture, **pause and request human confirmation** rather than guessing.
+- Correct paths and client/server directives; no server-only imports reachable from a client component.
+- Existing components reused; new components extracted and scoped correctly.
+- Inputs validated, operations authorized, persistence routed through the singleton, and index needs evaluated where applicable.
+- `bun run lint`, `bun run type-check` (`tsc --noEmit`), relevant tests through `bun run test`, and `bun run build` pass.
+- Exercise changed UI at mobile/desktop sizes when applicable; distinguish visual inspection from interaction and unit tests.
+- Record commands and outcomes, including skipped/blocked checks. An unavailable environment does not count as a successful build or integration test.
+- `git diff --check` passes; no secrets, generated output, or unrelated user changes included.
+
+For documentation-only changes, check local links, consistency, and `git diff --check`; do not rerun application checks without a relevant reason. Add meaningful tests for behavior and risk, not tests that merely mirror reversible text changes.
+
+## Permissions and Delivery
+
+- Repository instructions describe workflow, not authorization to push, merge, deploy, provision infrastructure, or create scheduled work. Obtain task-specific authorization before those operations unless already granted in the current project.
+- Create commits only when requested or explicitly authorized for the current delivery. Use Conventional Commits v1.0.0 and review the exact files staged. Do not commit unrelated user changes.
+- If a branch is needed, default to `codex/` unless the user specifies otherwise. Do not assume any branch has automatic deployment permission.
+- Keep working within the authorized scope. For a material change to architecture, core dependencies, or security posture, finish independent analysis and present the concrete decision for human confirmation.

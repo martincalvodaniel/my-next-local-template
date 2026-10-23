@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "nextjs",
+      "name": "my-next-template",
       "dependencies": {
         "better-auth": "1.7.10",
         "mongodb": "7.7.0",
