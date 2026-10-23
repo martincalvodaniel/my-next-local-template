@@ -114,3 +114,13 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Aceptación: ambas ventanas identificadas por duración; restante calculado correctamente; consultas actualizadas durante el trabajo; estimación de implementación, validación, correcciones y cierre; reservas sobre la capacidad total; reducción a un corte completo si no cabe; resto pendiente; tratamiento explícito de información no disponible y consumo compartido.
 - Validación: revisión de coherencia, enlaces Markdown locales y `git diff --check`. Sin pruebas de aplicación por tratarse exclusivamente de documentación.
 - Cierre: Conventional Commit local en `int`; conservar la publicación pendiente hasta que el usuario confirme la revisión del remoto.
+
+## 09 — Tipar la configuración geográfica de Vercel
+
+- Estado: `validated` (configuración local); despliegue no realizado y publicación Git pendiente de revisión humana del remoto.
+- Objetivo: integrar el fragmento humano de configuración Vercel tipado, conservando la región `cdg1` y la denegación de peticiones cuyo país no sea `ES`.
+- `target_paths`: `vercel.ts`, `package.json`, `bun.lock`, `README.md`, `plan/{master,workflow,iterations,iteration-log}.md`.
+- Dependencias: `vercel.ts` ya existe como archivo del usuario sin seguimiento; se conserva su regla y se añade únicamente el tipado solicitado y su paquete de desarrollo. Documentación oficial Vercel y capacidad de Codex consultadas; entrega acotada estimada dentro de ambas reservas, incluyendo validación/cierre.
+- Aceptación: configuración con `VercelConfig` resoluble; sin cambiar aplicación, datos locales ni rutas; documentación diferencia región de cómputo, geolocalización por IP y alcance de la regla frente a uso offline. Sin despliegue ni cambios en Vercel. Publicación Git sigue pendiente de revisión humana del remoto.
+- Validación: lint, tipos, pruebas existentes, build estático, instalación frozen, revisión de configuración contra esquema del proveedor si está disponible, enlaces y `git diff --check`. Las pruebas locales no acreditan el bloqueo en la red Vercel.
+- Cierre: commit local en `int`, incluyendo la integración del archivo aportado; sin reintentar push hasta indicación humana.

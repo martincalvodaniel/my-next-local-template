@@ -54,15 +54,14 @@ Este flujo se ejecuta con Codex y planifica el consumo de dos ventanas: **5 hora
 
 ### Reservas y decisión de iniciar
 
-| Ventana | Reserva mínima al cerrar | Capacidad utilizable antes de iniciar |
-| --- | --- | --- |
-| 5h | **7%** de la capacidad total de esa ventana | `max(0, remaining5h - 7)` puntos porcentuales |
-| 7d | **2%** de la capacidad total de esa ventana | `max(0, remaining7d - 2)` puntos porcentuales |
+| Ventana | Reserva mínima al cerrar                    | Capacidad utilizable antes de iniciar         |
+| ------- | ------------------------------------------- | --------------------------------------------- |
+| 5h      | **7%** de la capacidad total de esa ventana | `max(0, remaining5h - 7)` puntos porcentuales |
+| 7d      | **2%** de la capacidad total de esa ventana | `max(0, remaining7d - 2)` puntos porcentuales |
 
 Estos márgenes son una política humana de este proyecto, no límites garantizados por Codex. Se calculan sobre el total de cada ventana, **no sobre su saldo restante**. No son presupuestos para consumir deliberadamente: se procura conservarlos al terminar, con la implementación, validación, documentación y cierre ya incluidos en la estimación.
 
 Antes de lanzar una iteración:
-
 1. Estimar de forma conservadora su consumo en **cada ventana**, incluyendo análisis, implementación, pruebas, posibles reparaciones, revisión y cierre documental/Git. Usar evidencia reciente de tareas comparables cuando exista, con margen de incertidumbre. No prometer una equivalencia exacta entre porcentajes, mensajes, tokens o minutos: el coste varía con modelo, contexto, razonamiento y herramientas. [Referencia oficial de uso](https://learn.chatgpt.com/docs/pricing?codex-pricing-plans=individual).
 2. Iniciarla solo si el consumo estimado completo cabe en la capacidad utilizable de **ambas** ventanas: `estimated5h <= remaining5h - 7` y `estimated7d <= remaining7d - 2`. No asumir un reinicio futuro antes de completar el trabajo ni compensar el agotamiento de una ventana con saldo de la otra.
 3. Si no cabe, elegir e implementar una entrega más pequeña, completa y verificable que sí quepa. Reducir alcance o dividir por dependencias, conservando criterios de aceptación y validación propios; dejar explícitamente pendiente el resto. No iniciar una entrega grande esperando resolver su cierre después del rate limit ni quitar pruebas necesarias para hacerla parecer viable.

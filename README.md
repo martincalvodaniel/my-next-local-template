@@ -63,7 +63,15 @@ La configuración asume hosting en `/`. Usar un subdirectorio requiere alinear r
 
 Sube **todo `out/`** a un host estático HTTPS con tipos MIME correctos y soporte de `index.html` por carpeta. Publica de forma atómica. `sw.js`, manifest y HTML deben revalidarse (`Cache-Control: no-cache`); los recursos con hash pueden tener caché inmutable. Next no aplica headers de servidor en una exportación: configúralos en el host.
 
-La primera visita necesita descargar la aplicación. No hay despliegue preconfigurado ni permisos implícitos para producción o infraestructura.
+La primera visita necesita descargar la aplicación. No se ha vinculado ni desplegado un proyecto de hosting; no hay permisos implícitos para producción o infraestructura.
+
+### Configuración opcional de Vercel
+
+[vercel.ts](vercel.ts) conserva la configuración aportada: `regions: ["cdg1"]` y una regla para todas las rutas que deniega la petición cuando `x-vercel-ip-country` no coincide con `ES`, incluida su ausencia. El país corresponde a la IP pública, no a una identidad ni a la ubicación física garantizada. La regla solo se aplica al desplegar en Vercel; `next dev`, el preview estático y otros hosts no la aplican. Consulta la [configuración tipada](https://vercel.com/docs/project-configuration/vercel-ts), las [reglas WAF](https://vercel.com/docs/vercel-firewall/vercel-waf/custom-rules) y el [header de país](https://vercel.com/docs/headers/request-headers).
+
+`@vercel/config` está instalado únicamente como dependencia de desarrollo para resolver `VercelConfig`; no se incorpora al código del navegador. `cdg1` es París y configura la región de ejecución de funciones; la exportación estática actual no genera funciones y su contenido se distribuye por la red de Vercel. No fija la residencia de los datos del navegador. [Referencia de regiones](https://vercel.com/docs/regions).
+
+El bloqueo se evalúa en las peticiones que llegan a Vercel. **Una copia de la PWA ya almacenada puede seguir utilizándose offline fuera de España**: el service worker responde desde el dispositivo y no consulta el país. La regla no borra IndexedDB ni revoca esa copia local. El bloqueo efectivo y la entrega de rutas/assets desde España deben verificarse en un despliegue autorizado; una compilación local no acredita esas comprobaciones. Al copiar a otro proveedor, adapta o retira `vercel.ts` y su dependencia de tipos.
 
 ## Organización y validación
 
