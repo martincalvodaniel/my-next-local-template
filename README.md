@@ -50,7 +50,7 @@ Abre [localhost:3000](http://localhost:3000). La ruta `/` requiere sesión y red
 4. Crea secretos y credenciales OAuth propios. Configura la lista de acceso y una base de datos independiente; no reutilices datos ni credenciales del repositorio de origen.
 5. Completa [el plan del producto](plan/master.md) y la iteración `01` en [el orden de entregas](plan/iterations.md) antes de desarrollar funcionalidades.
 6. Implementa el dominio bajo `src/features/<feature>/`, valida entradas con esquemas compartidos y registra colecciones e índices junto con las consultas que los necesitan.
-7. Configura hosting, variables y verificaciones del entorno de destino. Este repositorio no concede permisos para publicar, desplegar o crear automatizaciones.
+7. Configura hosting, variables y verificaciones del entorno de destino. El flujo autoriza commit y push a `origin/int`; el merge y push de `main` corresponden al usuario. Hosting, producción y automatizaciones requieren su configuración y autorización específicas.
 
 ## Organización
 
@@ -95,4 +95,4 @@ Ejemplo de petición inicial:
 
 > Lee AGENTS.md y plan/master.md. Quiero crear [producto] para [usuarios]. Concreta el MVP, las decisiones pendientes y las primeras iteraciones. Implementa la primera entrega autorizada y valida su aceptación.
 
-El trabajo es secuencial por defecto. El paralelismo requiere autorización y archivos asignados sin solapamientos. Commits, publicación y trabajo desatendido siguen los permisos del proyecto de destino, nunca los de otro repositorio.
+El trabajo es secuencial por defecto. El paralelismo requiere autorización y archivos asignados sin solapamientos. Los agentes trabajan siempre en `int` y cierran cada iteración validada, incluida documentación, con un Conventional Commit y push a `origin/int`, verificando el SHA remoto. Tú revisas `int` y haces el merge y push de `main` cuando lo consideres correcto. Al reutilizar la plantilla, configura primero el remoto del nuevo proyecto. El trabajo desatendido y los despliegues requieren autorización específica.

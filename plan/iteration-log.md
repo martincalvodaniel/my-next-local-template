@@ -16,3 +16,14 @@
 - Límites: no se ha realizado un login interactivo con Google, una conexión real a MongoDB ni una revisión visual de las pantallas, que no han cambiado. La interfaz inicial sigue teniendo textos mixtos; su idioma se define al personalizar el producto.
 - Publicación: commit local solicitado por el usuario tras la validación; sin push ni despliegue solicitados. No se han modificado credenciales ni el repositorio de referencia.
 - Siguiente paso: definir el producto de destino en `01` a partir de sus requisitos humanos.
+
+## 00a — Flujo obligatorio en int · 2026-10-23
+
+- Estado: `validated`; cambio exclusivamente documental.
+- Instrucción humana: trabajar siempre en `int`, crear un commit y hacer push tras cada iteración; el usuario revisa y realiza el merge y push de `main`.
+- Cambios: alineados README, reglas raíz/anidadas, plan maestro y protocolo de cierre. Incluye iteraciones documentales, preparación segura de `int`, publicación explícita a `origin/int`, verificación del SHA y tratamiento de fallos sin force-push.
+- Esta decisión sustituye la política inicial de autorización de commit por entrega de `00`; la entrada anterior se conserva como evidencia histórica.
+- Preparación: árbol limpio; `git fetch origin`; creada `int` desde `origin/main` al no existir `int` local/remota. No se ha modificado `main`.
+- Validación: enlaces Markdown locales, consistencia de instrucciones vigentes y `git diff --check` aprobados. No se repiten pruebas de aplicación porque no cambia código ni configuración ejecutable.
+- Publicación: commit/push a `origin/int` autorizados como cierre de esta entrega; verificar el SHA remoto y comunicar el resultado real al usuario, sin anticipar su hash en este registro.
+- Siguiente paso de producto: `01`, pendiente de requisitos; integración a `main` exclusivamente humana.

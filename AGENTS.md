@@ -17,11 +17,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Iteration Workflow
 
 1. Read `plan/master.md`, `plan/workflow.md`, the relevant entry in `plan/iterations.md`, and recent entries in `plan/iteration-log.md`.
-2. Inspect the current branch and worktree. Preserve unrelated user changes and do not switch branches without a task-related reason and authorization.
+2. Inspect the current branch and worktree. Work exclusively on `int`: switch to the existing local branch, track `origin/int` if it exists, or create `int` from the current `origin/main` after fetching when neither exists. This branch setup is authorized. Preserve unrelated user changes; never reset, stash, or carry them across branches implicitly. If they prevent a safe switch, report the conflict before editing. Never implement or commit on `main`.
 3. Before a non-trivial edit, define the goal, `target_paths`, dependencies, acceptance criteria, and validation scope. Record the iteration in the plan; small fixes may use a compact entry.
 4. Execute the smallest coherent delivery that satisfies the authorized request. Resolve routine implementation choices autonomously; document architecture deviations with evidence and rationale.
 5. Update the iteration status and append validation evidence, limitations, and the next step to the log. A blocked check is not a passing check; never label an iteration validated while required acceptance checks remain unresolved.
-6. Review the final diff for scope, secrets, and unrelated changes. Follow `plan/workflow.md` for closure and any explicitly authorized commit/publication.
+6. Review the final diff for scope, secrets, and unrelated changes. Follow `plan/workflow.md` for the mandatory commit, push, and remote verification on `int`, including documentation-only iterations.
 7. Report what changed, what was verified, and any remaining limitation. On interruption, leave a precise resumption point instead of claiming completion.
 
 Default to sequential work. Spawn subagents only when the user or applicable instructions explicitly authorize delegation. Assign disjoint `target_paths`, name an integration owner, and remind workers that they are not alone and must preserve others' edits. Shared schemas, lockfiles, package scripts, index registration, and planning integration have one owner. Agent completion does not replace integrated validation.
@@ -92,7 +92,11 @@ For documentation-only changes, check local links, consistency, and `git diff --
 
 ## Permissions and Delivery
 
-- Repository instructions describe workflow, not authorization to push, merge, deploy, provision infrastructure, or create scheduled work. Obtain task-specific authorization before those operations unless already granted in the current project.
-- Create commits only when requested or explicitly authorized for the current delivery. Use Conventional Commits v1.0.0 and review the exact files staged. Do not commit unrelated user changes.
-- If a branch is needed, default to `codex/` unless the user specifies otherwise. Do not assume any branch has automatic deployment permission.
+- The user authorizes agents to work exclusively on `int` and to create a Conventional Commit and push to `origin/int` after every completed, validated iteration, including planning-only and documentation-only iterations. Do not ask for this permission again for each delivery.
+- Include code and its plan/log updates in the same commit. Review the exact staged files and preserve unrelated user changes. Never commit known-broken work merely to satisfy the closing protocol.
+- Push explicitly with `git push -u origin int` on the first publication and `git push origin int` thereafter. Verify that `origin` reports the same SHA for `refs/heads/int` as the local iteration commit before declaring publication complete. Never force-push.
+- `main` is exclusively human-managed: the user reviews `int`, merges it into `main`, and pushes `main`. Agents must not commit, merge, push, reset, or rebase `main`, or perform that promotion on the user's behalf.
+- If a commit, push, or remote verification fails, preserve validated changes, record the exact pending step, and report the failure. Do not declare publication complete or silently continue accumulating unpublished iterations.
+- This authorization covers the configured remote of the current project and ordinary `int` delivery. It does not authorize production deployment, provisioning infrastructure, scheduled work, or changing remotes. When reusing the template, configure the destination repository's remote before publishing.
+- If `int` has a configured integration deployment triggered by push, follow that project's documented environment policy. Do not assume any deployment exists in this starter.
 - Keep working within the authorized scope. For a material change to architecture, core dependencies, or security posture, finish independent analysis and present the concrete decision for human confirmation.

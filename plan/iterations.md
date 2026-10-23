@@ -21,3 +21,13 @@ El estado de aceptación es independiente de commit, publicación y despliegue. 
 - Validación: consistencia, enlaces locales y `git diff --check`; aplicar validación de código si la petición amplía el alcance.
 
 Las siguientes iteraciones se definen a partir del producto real. No hay una hoja de ruta de funcionalidades implícita en la plantilla.
+
+## 00a — Establecer integración agéntica en int
+
+- Estado: `validated`.
+- Objetivo: aplicar la instrucción humana de trabajar siempre en `int` y cerrar cada iteración con commit/push, reservando la promoción a `main` al usuario.
+- `target_paths`: `AGENTS.md`, `README.md`, `plan/{AGENTS,master,workflow,iterations,iteration-log}.md`.
+- Dependencias: `00` y autorización humana explícita de este flujo.
+- Aceptación: regla consistente en todos los documentos vigentes; documentación incluida en el cierre obligatorio; verificación del SHA remoto; recuperación explícita ante fallo; `main` exclusivamente humano.
+- Validación: enlaces locales, consistencia de reglas y `git diff --check`. Sin cambios de código que requieran repetir la suite.
+- Publicación: commit y push de esta entrega en `int`; resultado y SHA comunicados al cierre.

@@ -19,7 +19,7 @@ Completar al crear una aplicación a partir de esta base:
 | Idioma de interfaz | Pendiente; la base tiene `lang="es"` y textos mixtos |
 | Acceso y roles | Base actual: Google + lista de correos; confirmar adecuación |
 | Modelo de datos e invariantes | Pendiente |
-| Hosting y entornos | Pendiente; sin autorización de publicación |
+| Hosting y entornos | Pendiente; commit/push a `int` autorizado, promoción a `main` reservada al usuario |
 | Persistencia de identidad/sesiones | Base actual: sin adaptador persistente; evaluar según requisitos |
 
 ## Decisiones de la plantilla
@@ -28,7 +28,8 @@ Completar al crear una aplicación a partir de esta base:
 - Usar Bun y un único lockfile; no conservar configuraciones de instalación divergentes.
 - Organizar las funcionalidades por dominio cuando aparezcan requisitos reales; no crear módulos vacíos como demostración.
 - Planificar entregas pequeñas con dependencias, aceptación y evidencias. El orden vive en [iterations.md](iterations.md), el protocolo en [workflow.md](workflow.md) y el historial en [iteration-log.md](iteration-log.md).
-- Adaptar las reglas de idioma, navegación, permisos y presupuesto al proyecto de destino; no heredar decisiones del producto de origen.
+- Adaptar las reglas de idioma, navegación y presupuesto al proyecto de destino; no heredar decisiones del producto de origen.
+- Trabajar en `int` y cerrar cada iteración validada con commit y push a `origin/int`, incluida documentación; el usuario revisa, fusiona en `main` y publica `main`. Configurar el remoto propio antes de reutilizar este flujo.
 
 ## Próximo paso
 

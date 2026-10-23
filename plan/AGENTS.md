@@ -9,3 +9,4 @@
 - Update affected documents together when a decision changes. Preserve historical evidence; add corrections explicitly.
 - Link only to existing local files or verified primary sources. Never copy credentials, personal data, historical account quotas, or permissions from another project.
 - Keep future work pending until the user defines and authorizes the product. Do not turn sample entries into fabricated progress.
+- Preserve the mandatory iteration closing protocol: work on `int`, commit plan and implementation together after validation, push to `origin/int`, and verify the remote SHA. Documentation-only iterations follow the same protocol. The user alone merges and pushes `main`.
