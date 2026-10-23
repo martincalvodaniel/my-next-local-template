@@ -39,13 +39,42 @@ El usuario revisa `int` y, cuando lo considera correcto, hace el merge de `int` 
 
 La autorización se limita al remoto configurado del proyecto actual. Al copiar la plantilla, configurar el remoto de destino antes de publicar. No autoriza producción, provisión, cambios de remoto ni automatizaciones. Si un proyecto configura despliegue de integración al publicar `int`, documentar su política específica; esta plantilla no tiene ese despliegue configurado.
 
-## Presupuesto y continuación
+## Capacidad de Codex: ventanas de 5h y 7d
 
-Si el usuario solicita varias iteraciones o trabajo desatendido, acordar alcance, condición de parada y reservas antes de ejecutarlo. No copiar umbrales ni lecturas históricas de otro proyecto.
+Este flujo se ejecuta con Codex y planifica el consumo de dos ventanas: **5 horas** y **7 días**. La de 7d tiene un horizonte mucho más amplio y una capacidad mayor en el contexto previsto por este flujo; eso no permite ignorar la de 5h. Cada ventana tiene su propio saldo y reinicio: debe quedar capacidad suficiente en ambas para completar una iteración. No deducir cuotas ni una proporción de capacidad a partir de su duración; comprobar siempre lo que informa la cuenta actual.
 
-Cuando se gestione presupuesto y exista una herramienta de uso, consultar las dos ventanas disponibles directamente y calcular el restante como `100 - usedPercent`. No pedir lecturas accesibles al usuario, confundir cuota consumida con disponible ni prometer costes exactos. Reservar margen para pruebas, reparaciones y cierre. Si las lecturas necesarias no están disponibles, cerrar el corte coherente y comunicar la limitación antes de iniciar otro dependiente del presupuesto.
+### Consulta y seguimiento
 
-Este archivo no autoriza créditos, reinicios, automatizaciones ni continuaciones programadas. Cualquier permiso operativo se limita a la solicitud y al proyecto donde se concedió.
+- Consultar la herramienta de límites disponible en Codex, actualmente `mcp__codex_app__get_usage_limits`, al comenzar la sesión y **antes de iniciar cada iteración**. Usar una capacidad equivalente si el nombre cambia; no pedir al usuario información accesible mediante herramientas.
+- Identificar las ventanas por `windowDurationMins`: `300` para 5h y `10080` para 7d; no depender del orden de `primary` y `secondary`. Preferir `rateLimitsByLimitId` para el límite aplicable al modelo; usar `rateLimits` como alternativa cuando no exista ese mapa. Si hay varios límites aplicables, respetarlos todos.
+- Calcular `remainingPercent = max(0, min(100, 100 - usedPercent))`. `usedPercent` representa consumo, no capacidad restante. Conservar durante la sesión la hora de consulta, el saldo y `resetsAt` de ambas ventanas; expresar los reinicios al usuario en su zona horaria cuando sea relevante.
+- Mantener conciencia de la capacidad durante todo el trabajo: actualizar la lectura antes de fases largas o costosas, después de imprevistos, reintentos o ampliaciones de alcance y antes de decidir la siguiente iteración. Consultar también al cierre para contrastar estimación y consumo. Una lectura anterior no es un contador en tiempo real; evitar consultas repetidas sin trabajo o cambios que las justifiquen.
+- Los límites se comparten con otros chats y actividad de la cuenta; no atribuir toda variación a esta tarea ni asumir que el saldo permanecerá intacto. Si se aproxima una reserva, consultar de nuevo antes de continuar con trabajo adicional.
+- Un campo ausente o `null`, una herramienta no disponible o una lectura fallida significan **capacidad desconocida**, nunca cero consumo ni cuota ilimitada. Comunicar la limitación; no iniciar una entrega costosa cuya viabilidad dependa de datos desconocidos. Cerrar el corte coherente ya abierto y dejar una continuación precisa.
+
+### Reservas y decisión de iniciar
+
+| Ventana | Reserva mínima al cerrar | Capacidad utilizable antes de iniciar |
+| --- | --- | --- |
+| 5h | **7%** de la capacidad total de esa ventana | `max(0, remaining5h - 7)` puntos porcentuales |
+| 7d | **2%** de la capacidad total de esa ventana | `max(0, remaining7d - 2)` puntos porcentuales |
+
+Estos márgenes son una política humana de este proyecto, no límites garantizados por Codex. Se calculan sobre el total de cada ventana, **no sobre su saldo restante**. No son presupuestos para consumir deliberadamente: se procura conservarlos al terminar, con la implementación, validación, documentación y cierre ya incluidos en la estimación.
+
+Antes de lanzar una iteración:
+
+1. Estimar de forma conservadora su consumo en **cada ventana**, incluyendo análisis, implementación, pruebas, posibles reparaciones, revisión y cierre documental/Git. Usar evidencia reciente de tareas comparables cuando exista, con margen de incertidumbre. No prometer una equivalencia exacta entre porcentajes, mensajes, tokens o minutos: el coste varía con modelo, contexto, razonamiento y herramientas. [Referencia oficial de uso](https://learn.chatgpt.com/docs/pricing?codex-pricing-plans=individual).
+2. Iniciarla solo si el consumo estimado completo cabe en la capacidad utilizable de **ambas** ventanas: `estimated5h <= remaining5h - 7` y `estimated7d <= remaining7d - 2`. No asumir un reinicio futuro antes de completar el trabajo ni compensar el agotamiento de una ventana con saldo de la otra.
+3. Si no cabe, elegir e implementar una entrega más pequeña, completa y verificable que sí quepa. Reducir alcance o dividir por dependencias, conservando criterios de aceptación y validación propios; dejar explícitamente pendiente el resto. No iniciar una entrega grande esperando resolver su cierre después del rate limit ni quitar pruebas necesarias para hacerla parecer viable.
+4. Si ni siquiera cabe un corte pequeño con su cierre, no abrir otra implementación. Documentar estado, pendientes y punto de reanudación mientras quede capacidad. Si cambia la estimación durante una entrega, reducir el trabajo adicional y cerrar el menor resultado coherente que pueda validarse; no declarar completado el alcance restante ni validado trabajo incompleto.
+
+### Aprovechamiento y continuación
+
+Buscar el máximo avance útil **dentro del alcance autorizado**, utilizando ambas ventanas hasta sus reservas sin dejar trabajo abierto por rate limit. Si una entrega termina y queda capacidad, reevaluar una siguiente entrega autorizada o un corte menor; no detenerse por comodidad ni inventar funcionalidades para consumir cuota. Al alcanzar el margen de cualquiera de las ventanas, no iniciar más trabajo. Los márgenes y estimaciones reducen el riesgo, pero no garantizan evitar un límite ante consumo concurrente o cambios de coste.
+
+Registrar en el plan el alcance elegido, el resto pendiente y la decisión de ajustar o detenerse, sin copiar instantáneas de cuenta, identificadores ni cuotas históricas como configuración de la plantilla. Si el usuario solicita varias iteraciones o trabajo desatendido, acordar alcance y condición de parada; estas reservas ya quedan establecidas salvo instrucción humana posterior.
+
+Esta sección no autoriza compras de créditos, uso de reinicios, cambio de modelo, automatizaciones, esperas programadas ni trabajo fuera de la petición. Si hace falta capacidad adicional, informar del siguiente reinicio disponible y dejar el punto de continuación; no ejecutar un reinicio ni programar una reanudación sin autorización.
 
 ## Interrupciones
 

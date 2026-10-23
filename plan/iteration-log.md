@@ -133,3 +133,15 @@
 - Próximo paso: esperar la revisión humana del remoto y resolver su acceso para cerrar la publicación; después copiar la base a un repositorio propio y definir el producto en `01`. No iniciar otra iteración sin cerrar o comunicar este paso pendiente.
 
 - Cierre operativo: perfiles temporales de Chrome cerrados y eliminados; worker de prueba restaurado; preview propio detenido. Publicación reservada a una nueva indicación del usuario después de revisar el remoto.
+
+
+## 08 — Capacidad de Codex por ventanas · 2026-10-23
+
+- Estado: `validated` para la entrega documental local. Petición humana: gestionar las ventanas de 5h/7d, dimensionar cada iteración para cerrarla sin rate limit y aprovechar la capacidad manteniendo reservas del 7%/2%.
+- Nueva sección específica en `workflow.md`, enlazada desde `AGENTS.md` y resumida en el plan maestro. Las reservas se aplican a la capacidad total de cada ventana, tras estimar análisis, implementación, validación, reparaciones y cierre; deben cumplirse ambas. Si no cabe, se entrega un corte menor completo y se deja el resto pendiente.
+- Consultas al inicio, antes de cada iteración, en fases significativas, ante imprevistos y al cierre. Se identifican ventanas por duración, se calcula restante a partir de `usedPercent` y se consideran reinicios, datos desconocidos y actividad compartida. Se consulta la herramienta real al preparar y cerrar esta entrega, sin persistir instantáneas ni identificadores de cuenta en la plantilla.
+- Se distingue el horizonte más amplio de 7d de una proporción de cuota no deducible por duración. La estimación es conservadora; no se garantizan costes ni ausencia absoluta de límites. No se inventa trabajo para gastar capacidad ni se omiten pruebas para aumentar alcance. No hay autorización nueva de créditos, reinicios o trabajo programado.
+- Referencia oficial consultada y enlazada: [Pricing](https://learn.chatgpt.com/docs/pricing?codex-pricing-plans=individual), para la variabilidad del consumo. Las reservas son una política del usuario, no una regla de OpenAI.
+- Validación: revisión de consistencia entre reglas y flujo, enlaces locales/encabezado de destino y `git diff --check` aprobados. Sin cambios de código/configuración/dependencias; no se repiten lint, tipos, pruebas de aplicación ni build por falta de impacto funcional.
+- Cierre: Conventional Commit documental local en `int`. La nueva petición autoriza esta entrega, pero no revoca la decisión anterior de revisar el remoto antes de publicar. No se ejecuta fetch/push ni se modifica el remoto; `07` y esta entrega siguen pendientes de publicación y verificación de SHA remoto tras indicación humana. `main` intacta.
+- Próximo paso: esperar la revisión del remoto; aplicar esta política al dimensionar las siguientes iteraciones autorizadas.

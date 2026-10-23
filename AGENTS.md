@@ -33,6 +33,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Work sequentially by default. Spawn subagents only with explicit authorization. Assign disjoint paths and one integration owner; workers must preserve others' edits. Shared schemas, lockfiles, package scripts, database migrations and planning have one owner. Agent completion does not replace integrated validation.
 
+## Codex Usage Capacity
+
+- Follow the [5h/7d capacity policy](plan/workflow.md#capacidad-de-codex-ventanas-de-5h-y-7d) throughout agentic iterations. Query Codex usage limits at session start, before each iteration, at significant checkpoints and at closure; track both windows and their reset times.
+- Preserve at least 7% of the total 5h allowance and 2% of the total 7d allowance after the entire delivery. Estimate analysis, implementation, required validation, repairs and closure against both remaining allowances before starting.
+- If the full iteration will not fit, complete a smaller validated delivery that will fit and leave the rest pending. Maximize useful authorized progress within those reserves; never trade required checks for more scope, assume unknown usage is unlimited or start work that cannot be closed.
+
 ## Authoritative Stack
 
 - Next.js 16 App Router, React 19, React DOM 19, TypeScript, Tailwind CSS 4.

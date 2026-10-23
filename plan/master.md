@@ -35,6 +35,6 @@ La instalación necesita un navegador compatible y un origen HTTPS, salvo localh
 
 ## Flujo y próximo paso
 
-Seguir [AGENTS.md](../AGENTS.md), [workflow.md](workflow.md), [iterations.md](iterations.md) y [iteration-log.md](iteration-log.md). La entrega actual es `07`; `01` sigue pendiente hasta definir un producto real. No inventar un dominio de demostración.
+Seguir [AGENTS.md](../AGENTS.md), [workflow.md](workflow.md), [iterations.md](iterations.md) y [iteration-log.md](iteration-log.md). La base técnica corresponde a `07`; `08` añade la política de capacidad de Codex. Cada iteración consulta las ventanas de 5h/7d, estima su cierre completo y conserva reservas del 7%/2%; si no cabe, entrega un corte menor y deja el resto pendiente. `01` sigue pendiente hasta definir un producto real. No inventar un dominio de demostración.
 
 Trabajo secuencial en `int`, commit/push y SHA remoto tras cada iteración validada. El usuario integra y publica `main`. Al copiar, configurar el remoto propio antes del primer push. Backend, autenticación, sincronización y servicios externos requieren autorización humana que revise explícitamente el alcance local.

@@ -104,3 +104,13 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Cierre: commit/push en `int` y verificación de SHA remoto; `main` reservada al usuario.
 
 - Evidencia final: 14 pruebas/54 aserciones, lint, tipos, Knip, instalación frozen y build aprobados; build adicional sin archivos de entorno. Navegador: vistas 390/1280px, rutas offline sin visita previa a Settings, persistencia tras reinicio, sincronización de tema y actualización consentida sin pérdida de datos. Instalación física no ejecutada. Ver [iteration-log.md](iteration-log.md).
+
+## 08 — Gestionar capacidad de Codex por ventanas
+
+- Estado: `validated` (documentación local); publicación pendiente de la revisión humana del remoto.
+- Objetivo: incorporar al flujo agéntico la consulta de las ventanas de 5h/7d y ajustar cada entrega a la capacidad disponible con reservas del 7%/2%.
+- `target_paths`: `AGENTS.md`, `plan/{master,workflow,iterations,iteration-log}.md`.
+- Dependencias: petición humana explícita; herramienta de límites de Codex y documentación oficial consultadas. La publicación de `07` sigue pendiente de la revisión humana del remoto; esta petición autoriza una nueva entrega documental local, sin reintentar el push.
+- Aceptación: ambas ventanas identificadas por duración; restante calculado correctamente; consultas actualizadas durante el trabajo; estimación de implementación, validación, correcciones y cierre; reservas sobre la capacidad total; reducción a un corte completo si no cabe; resto pendiente; tratamiento explícito de información no disponible y consumo compartido.
+- Validación: revisión de coherencia, enlaces Markdown locales y `git diff --check`. Sin pruebas de aplicación por tratarse exclusivamente de documentación.
+- Cierre: Conventional Commit local en `int`; conservar la publicación pendiente hasta que el usuario confirme la revisión del remoto.
