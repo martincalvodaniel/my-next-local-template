@@ -1,56 +1,40 @@
 # Plan maestro
 
-## Estado actual
+## Estado y requisitos aceptados
 
-Plantilla técnica sin dominio de negocio definido. Incluye Google OAuth con cookies de sesión, administradores en `ALLOWED_EMAILS`, usuarios normales autorizados en MongoDB y administración protegida en `/admin`. La colección `user_access` conserva permisos y solicitudes de acceso, con índice único por correo normalizado e índice de estado/correo para el listado paginado de pendientes. El inventario y la configuración se describen en [README.md](../README.md).
+Plantilla reutilizable mediante copia de archivos para webapps **puramente locales**, instalables en móvil y escritorio. La petición humana de la iteración `07` sustituye el modelo anterior de Google, roles y MongoDB. Las iteraciones `00`–`06` se conservan como evidencia histórica, no como arquitectura vigente.
+- Sin cuentas, login, servidor de aplicación, base remota, sincronización ni servicios externos.
+- Datos locales en IndexedDB mediante `idb`; esquemas y migraciones versionados. La preferencia de tema es el único dato funcional de la base.
+- Next.js exporta archivos estáticos en `out/`. React resuelve la interacción local; no hay Server Actions, proxy ni rutas API.
+- Manifest, iconos locales, instalación progresiva, service worker y caché offline de las rutas/recursos compilados. Actualizaciones ofrecidas al usuario, sin borrar IndexedDB.
+- Tema System/Light/Dark, con caché mínima en localStorage para el arranque sin destello. IndexedDB es la persistencia principal.
+- Fuentes del sistema; sin credenciales ni variables obligatorias. UI en inglés y `lang="en"`; documentación en español.
+- Stack: Next/React/TypeScript/Tailwind/Bun/Biome/Zod; `idb` en producción, `fake-indexeddb` en pruebas. Versiones exactas en `package.json`/`bun.lock`.
 
-La autenticación no utiliza un adaptador persistente MongoDB. No existen funcionalidades offline, sincronización, PDF ni despliegue preconfigurado. Estos elementos requieren alcance y decisiones propios si el producto los necesita.
+La instalación necesita un navegador compatible y un origen HTTPS, salvo localhost para desarrollo. La primera visita y preparación de caché requieren conexión al host estático; después funciona offline. No es una aplicación que se ejecute abriendo `index.html` con `file://`, ni incluye distribución por tiendas.
 
-## Definición del próximo producto
+## Decisiones de datos y actualización
 
-Completar al crear una aplicación a partir de esta base:
+- Cada aplicación copiada debe personalizar `src/config/app.ts`, la marca/iconos y su origen. Hosting en la raíz del origen; los subdirectorios requieren una adaptación explícita de rutas, manifest y service worker.
+- IndexedDB conserva datos por origen, navegador, perfil y dispositivo. No ofrece copia de seguridad ni sincronización. Borrar datos del sitio, modo privado o políticas de cuota pueden perderlos. Antes de incorporar datos de producto irremplazables, acordar exportación/importación y recuperación.
+- Los cambios de esquema suben la versión de IndexedDB y añaden migraciones no destructivas. Los fallos no se ocultan con almacenamiento volátil ni borrado de la base.
+- Cada build genera una caché identificada por su contenido completo, incluido el código del worker. Se conserva la versión previa para pestañas abiertas; no se garantiza mantener pestañas con más de una versión de retraso. La actualización requiere pulsar Update and reload o cerrar las pestañas anteriores.
+- Hosting debe servir todo `out/`, con MIME correcto y sin caché inmutable para `sw.js`, HTML y manifest. Publicar la salida de forma atómica para evitar mezclas de versiones. Configurar HTTPS. No hay hosting ni despliegue preconfigurado.
 
-| Decisión                           | Estado                                                                                           |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Nombre y objetivo                  | Pendiente de definición humana                                                                   |
-| Usuarios y problema que resuelve   | Pendiente                                                                                        |
-| MVP y criterios de éxito           | Pendiente                                                                                        |
-| Fuera de alcance                   | Pendiente                                                                                        |
-| Idioma de interfaz                 | Inglés; `lang="en"`, textos visibles y accesibles en inglés                                      |
-| Acceso y roles                     | Google verificado; administradores por entorno, usuarios normales por permisos MongoDB           |
-| Modelo de datos e invariantes      | Acceso: `user_access.email` único, normalizado, con fecha de alta; dominio de producto pendiente |
-| Hosting y entornos                 | Pendiente; commit/push a `int` autorizado, promoción a `main` reservada al usuario               |
-| Persistencia de identidad/sesiones | Base actual: sin adaptador persistente; evaluar según requisitos                                 |
+## Definición del producto de destino
 
-## Decisiones de la plantilla
+| Decisión                              | Estado                                         |
+| ------------------------------------- | ---------------------------------------------- |
+| Nombre, usuarios y problema           | Pendiente de petición humana                   |
+| MVP, criterios de éxito y exclusiones | Pendientes                                     |
+| Idioma de interfaz                    | Inglés por defecto                             |
+| Acceso                                | Local, sin identidad ni roles                  |
+| Datos e invariantes de producto       | Pendientes; persistencia IndexedDB obligatoria |
+| Respaldo/recuperación                 | Diseñar antes de datos irremplazables          |
+| Publicación                           | Host estático HTTPS, sin proveedor predefinido |
 
-- Mantener el stack y las fronteras server/client establecidos en [AGENTS.md](../AGENTS.md).
-- Usar Bun y un único lockfile; no conservar configuraciones de instalación divergentes.
-- Organizar las funcionalidades por dominio cuando aparezcan requisitos reales; no crear módulos vacíos como demostración.
-- Planificar entregas pequeñas con dependencias, aceptación y evidencias. El orden vive en [iterations.md](iterations.md), el protocolo en [workflow.md](workflow.md) y el historial en [iteration-log.md](iteration-log.md).
-- Adaptar las reglas de idioma, navegación y presupuesto al proyecto de destino; no heredar decisiones del producto de origen.
-- Trabajar en `int` y cerrar cada iteración validada con commit y push a `origin/int`, incluida documentación; el usuario revisa, fusiona en `main` y publica `main`. Configurar el remoto propio antes de reutilizar este flujo.
+## Flujo y próximo paso
 
-## Próximo paso
+Seguir [AGENTS.md](../AGENTS.md), [workflow.md](workflow.md), [iterations.md](iterations.md) y [iteration-log.md](iteration-log.md). La entrega actual es `07`; `01` sigue pendiente hasta definir un producto real. No inventar un dominio de demostración.
 
-La preparación de la plantilla se registra como `00`. El siguiente trabajo de producto es `01`: concretar el MVP a partir de una petición humana. No implementar un dominio de ejemplo ni configurar servicios antes de esa definición.
-
-## Acceso implementado en 02
-
-La autorización humana redefine `ALLOWED_EMAILS` como lista de administradores. `/admin` permite dar de alta y revocar correos normales mediante acciones de servidor autorizadas y validadas con Zod. Las sesiones siguen sin adaptador persistente: se persisten permisos, no identidades ni sesiones Better Auth. Los roles se calculan en servidor por petición; la revocación deniega el siguiente acceso con cookies ya emitidas. La navegación de inicio muestra administración únicamente a administradores. La interfaz completa usa inglés por la decisión humana registrada en 05.
-
-## Solicitudes implementadas en 03
-
-Una identidad Google verificada sin permiso puede crear su propia solicitud desde `/auth/access`; no obtiene autorización de aplicación. Administración lista las pendientes y permite aceptar o rechazar. El estado vive junto al permiso en `user_access`, de modo que aceptar y conceder acceso normal es una única escritura condicional por correo/UUID/estado pendiente. Los registros anteriores sin estado siguen aprobados. Repetir una petición pendiente conserva su UUID; reenviar tras rechazo genera otro y una decisión antigua no puede aplicarse a él. No hay envío de correos ni promoción a administrador.
-
-## Navegación y ajustes implementados en 04
-
-Las rutas protegidas comparten una única navegación responsive: inferior con safe area en móvil y superior desde 768px. Ajustes es el único destino por ahora, con foto del perfil social (iniciales como respaldo) y estado activo. `/settings` muestra identidad y rol del servidor, cambio de cuenta, acceso a administración solo para administradores y selector Sistema/Claro/Oscuro. El tema es una preferencia local del navegador, validada y aplicada antes de hidratación; no introduce persistencia Mongo ni dependencias. Se toma el patrón de referencia autorizado sin copiar su dominio ni sus claves de almacenamiento.
-
-## Idioma de interfaz en 05
-
-Por petición humana, toda la UI usa inglés: navegación, cuenta, tema, acceso, solicitudes, administración, estados vacíos, errores y textos accesibles. El documento declara `lang="en"`. README y planificación pueden seguir en español; no se añade infraestructura de traducciones ni se modifican rutas, roles o valores persistidos.
-
-## Home en navegación en 06
-
-Por petición humana, el registro compartido incluye Home (`/`) y Settings (`/settings`) en ambas variantes responsive. Home utiliza un icono local de casa y solo se activa en la raíz; Settings conserva la foto del perfil social y el respaldo de iniciales.
+Trabajo secuencial en `int`, commit/push y SHA remoto tras cada iteración validada. El usuario integra y publica `main`. Al copiar, configurar el remoto propio antes del primer push. Backend, autenticación, sincronización y servicios externos requieren autorización humana que revise explícitamente el alcance local.

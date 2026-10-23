@@ -8,95 +8,87 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Scope and Language
 
-- This repository is a reusable webapp starter. Do not infer a product domain, roadmap, infrastructure, or permissions from its Git ancestry or a neighboring repository.
-- All generated or edited code, identifiers, code comments, technical error messages, and commit messages must be in English.
-- Communicate with the user in their language. README and product planning may be in Spanish.
-- The starter UI language is English, as recorded in `plan/master.md`. Keep all visible copy, validation messages, accessibility text, and HTML `lang="en"` in English. Change the UI language only when explicitly requested; no localization framework is installed.
-- Read applicable nested `AGENTS.md` files before editing their directories. Nested rules add scoped constraints without weakening root boundaries.
+- This is a reusable, local-only, installable webapp starter. Its current scope supersedes the authentication/database implementation documented in historical iterations 00–06. Do not infer a product domain or roadmap from Git ancestry or neighboring repositories.
+- All code, identifiers, code comments, technical errors and commit messages must be in English. Communicate in the user's language; README and product plans may be Spanish.
+- Keep visible UI, validation, accessibility text and `lang="en"` in English unless explicitly requested otherwise.
+- Read nested `AGENTS.md` before editing scoped directories. They add constraints without weakening these boundaries.
+
+## Product Invariants
+
+- No login, social identity, accounts, roles, remote database, backend, telemetry, CDN, remote fonts or runtime API dependency. Data stays in IndexedDB on the user's browser/device.
+- Keep `output: "export"`. Server Components compose static content at build time; browser state and mutations run in Client Components through local repositories. Do not introduce Server Actions, request-dependent routes, proxy, cookies or runtime secrets.
+- Installation and offline access are baseline capabilities. Preserve the manifest, local icons, safe areas and service worker. Only register it in production builds; verify offline against the static preview, never infer it from `next dev`.
+- Product data belongs in IndexedDB. localStorage is allowed only for the small synchronous theme bootstrap cache, never as an alternative data layer. Cache Storage holds disposable application assets, never user records.
+- Browser storage is origin/profile/device scoped and may be cleared or evicted. Do not imply backup, encryption, authentication or cross-device sync. Before introducing irreplaceable product data, define export/import and recovery acceptance with the user.
+- Adding a backend, authentication, external requests, sync, notifications, core dependencies or a new storage solution needs explicit human authorization. Routine implementation within these invariants is autonomous. The user has authorized `idb` and development-only `fake-indexeddb` for this conversion.
 
 ## Iteration Workflow
 
-1. Read `plan/master.md`, `plan/workflow.md`, the relevant entry in `plan/iterations.md`, and recent entries in `plan/iteration-log.md`.
-2. Inspect the current branch and worktree. Work exclusively on `int`: switch to the existing local branch, track `origin/int` if it exists, or create `int` from the current `origin/main` after fetching when neither exists. This branch setup is authorized. Preserve unrelated user changes; never reset, stash, or carry them across branches implicitly. If they prevent a safe switch, report the conflict before editing. Never implement or commit on `main`.
-3. Before a non-trivial edit, define the goal, `target_paths`, dependencies, acceptance criteria, and validation scope. Record the iteration in the plan; small fixes may use a compact entry.
-4. Execute the smallest coherent delivery that satisfies the authorized request. Resolve routine implementation choices autonomously; document architecture deviations with evidence and rationale.
-5. Update the iteration status and append validation evidence, limitations, and the next step to the log. A blocked check is not a passing check; never label an iteration validated while required acceptance checks remain unresolved.
-6. Review the final diff for scope, secrets, and unrelated changes. Follow `plan/workflow.md` for the mandatory commit, push, and remote verification on `int`, including documentation-only iterations.
-7. Report what changed, what was verified, and any remaining limitation. On interruption, leave a precise resumption point instead of claiming completion.
+1. Read `plan/master.md`, `plan/workflow.md`, the relevant iteration in `plan/iterations.md`, and recent `plan/iteration-log.md` entries.
+2. Inspect Git and preserve unrelated changes. Work exclusively on `int`: select the existing local branch, track `origin/int` if present, otherwise fetch and create `int` from `origin/main`. Never reset, stash or carry unrelated changes across branches implicitly. Report conflicts before editing. Never implement on `main`.
+3. Before a non-trivial edit, record goal, `target_paths`, dependencies, acceptance and validation in the plan. Include storage migrations, offline behavior and installation impact when relevant.
+4. Deliver the smallest coherent authorized change. Resolve routine choices autonomously; document architecture changes and rationale.
+5. Update status and log with actual results, limits and next step. Blocked checks are not passing checks.
+6. Review exact staged files and close every validated iteration with a Conventional Commit, push to `origin/int` and remote SHA verification, including docs-only changes. Follow `plan/workflow.md`.
 
-Default to sequential work. Spawn subagents only when the user or applicable instructions explicitly authorize delegation. Assign disjoint `target_paths`, name an integration owner, and remind workers that they are not alone and must preserve others' edits. Shared schemas, lockfiles, package scripts, index registration, and planning integration have one owner. Agent completion does not replace integrated validation.
+Work sequentially by default. Spawn subagents only with explicit authorization. Assign disjoint paths and one integration owner; workers must preserve others' edits. Shared schemas, lockfiles, package scripts, database migrations and planning have one owner. Agent completion does not replace integrated validation.
 
 ## Authoritative Stack
 
-- Next.js 16 App Router, React 19, React DOM 19, and TypeScript.
-- Better Auth for Google authentication; the current configuration has no persistent database adapter.
-- Native `mongodb` driver, `server-only`, SWR, and Zod.
-- Tailwind CSS 4, Biome, and Bun for package management and tests.
-- Exact versions belong to `package.json` and `bun.lock`. Use `bun install --frozen-lockfile` for a reproducible installation. Keep Bun as the single lockfile source.
-- Do not introduce core dependencies, an ORM, a state library, a UI kit, or alternative auth/data solutions without explicit human approval. PDF support is not installed; evaluate it only for a concrete requirement.
+- Next.js 16 App Router, React 19, React DOM 19, TypeScript, Tailwind CSS 4.
+- `idb` for IndexedDB promises/transactions; Zod for shared validation. Native browser APIs for PWA capabilities.
+- Bun for dependencies/tests; Biome for formatting/lint; `fake-indexeddb` only in tests; Knip for unused-code inspection.
+- Exact versions belong to `package.json` and `bun.lock`; install with `bun install --frozen-lockfile`. Bun is the single lockfile source.
+- Do not add speculative libraries, an ORM, state library, UI kit, PWA framework or alternative auth/data stack. Add dependencies only for concrete authorized needs.
 
 ## Architecture and Boundaries
 
 ```text
-src/app/                         Routing primitives only
-src/components/{ui,shared}/      Reusable primitives and layout components
-src/features/<feature>/          Domain components, hooks, services, actions.ts
-src/lib/auth/                    Server auth, authorization, browser client
-src/lib/db/                      Native MongoDB data layer and repositories
-src/config/                      Constants and typed environment access
-src/schemas/                     Shared Zod schemas, created when needed
-src/types/                       Shared runtime-agnostic types, created when needed
-src/hooks/                       Global client hooks, created when needed
+src/app/                         Routing and static metadata only
+src/components/{ui,shared}/      Reusable primitives and shell/providers
+src/features/<feature>/          Domain components, hooks and local services
+src/lib/storage/                 IndexedDB connection, migrations, repositories
+src/lib/pwa/                     Installation/offline contracts and hooks
+src/lib/theme/                   Theme client behavior
+src/config/                      App identity, storage namespaces and constants
+src/schemas/                     Runtime-agnostic Zod schemas
+src/types/                       Runtime-agnostic types, when needed
+scripts/                        Static preview and service-worker generation
 ```
 
-- `app/**` contains routing primitives (`page`, `layout`, `loading`, `error`, `not-found`, `route`) and their thin composition. Put business logic in `features/**` or `lib/**`.
-- Prefer Server Components and Server Actions. Use SWR only for interactive client-driven fetching, polling, optimistic updates, or revalidation.
-- Every runtime module in `lib/db/**` and server-side auth must begin with `import "server-only"`. The browser auth client and SWR hooks must be client-only with `"use client"` where applicable.
-- Shared `schemas/**` and `types/**` must be framework- and runtime-agnostic. Do not expose MongoDB types or server-only imports to them.
-- Read environment variables only through `config/**`; never access `process.env` directly from features or components.
-- Use `@/*` mapped to `src/*`; avoid deep relative imports. Use kebab-case filenames/folders, PascalCase components, and camelCase functions/variables.
+- `app/**` is thin composition. Put behavior in features/lib. Prefer static composition and narrowly scoped Client Components.
+- Access browser APIs only in effects, event handlers or called client functions, never at module load or prerender. `"use client"` does not disable prerendering.
+- Only `lib/storage/**` imports `idb` or opens IndexedDB; features use repository functions. Follow its nested rules for validation, transactions, migrations and lifecycle.
+- Shared schemas/types must not import framework or browser storage APIs. Validate both application inputs and persisted records; handle corrupt data without silently deleting it.
+- Use `@/*` for `src/*`, kebab-case files/folders, PascalCase components and camelCase functions/variables.
+- Keep configuration in `config/**`. No environment variables are required; any future authorized environment access belongs there. Never log or commit secrets or personal data.
 
-## Components and UI
+## Components and PWA
 
-- Search for reusable components before adding one.
-- Define each component in its own file; do not declare components inside other components or inline in unrelated modules.
-- Keep domain components under `features/<feature>/components/**`; generic components belong in `components/ui/**` or `components/shared/**`.
-- Build responsive, mobile-first screens with accessible labels, keyboard support, visible focus, usable touch targets, and no fixed content covering controls.
-- Choose navigation based on the actual product; do not predefine destinations or product-specific navigation patterns in the starter.
-
-## Validation, Authentication, and Data
-
-- Validate every application-controlled input to a Server Action or route handler with a shared Zod schema from `schemas/**`, including query parameters and identifiers. Third-party protocol handlers such as Better Auth own their protocol validation; do not replace their parsing with a duplicate contract.
-- Implement application mutations in `features/<feature>/actions.ts` with `"use server"`; delegate persistence to the data layer.
-- Check sessions in protected layouts and authorize each data access and mutation at its server entry point. Layouts and proxy redirects alone do not protect Server Actions or API handlers.
-- The proxy only checks cookie presence. Never treat that as validated identity or permissions.
-- Verified Google identity is separate from application access. Non-members may hold an identity session solely to request access at `/auth/access`; use `getVerifiedSession()` only for identity-scoped self-service. Protected product routes/actions must still require authorized access. Access requests derive email from the verified session, and admin decisions condition on the pending request UUID.
-- `ALLOWED_EMAILS` defines administrators only. Normal user access is persisted in MongoDB `user_access`; deny access unless a verified session email is an administrator or has a current grant. Resolve roles on the server for each request; never trust roles submitted by a client or cached in a session cookie. Keep administration checks inside each action and protected admin layout. Do not silently change cookie/session persistence, lifetimes, or authentication strategy.
-- Only `lib/db/**` imports the MongoDB driver. Use its singleton, collection registry, and repository functions; never create connections per request.
-- Evaluate indexes whenever introducing a collection or query/sort/lookup/uniqueness pattern. Register required indexes in `src/lib/db/ensure-indexes.ts`, never ad hoc.
-- Never log or commit secrets, tokens, credentials, or personal data. `.env.example` is the only tracked environment template and must contain placeholders only.
-- Use isolated resources for integration tests and clean up only resources owned by the test. Do not run database commands against user or production data implicitly.
+- Search for reusable components before adding one. One component per file; never nest component declarations or add components in unrelated modules.
+- Domain UI belongs in `features/<feature>/components/**`; generic UI belongs in `components/ui/**` or `components/shared/**`.
+- Mobile-first responsive UI, accessible labels, keyboard support, focus, touch targets and safe areas; navigation must not cover content. Keep Home/Settings until the actual product defines other destinations.
+- Handle pending, empty, corrupt, blocked, quota and unavailable-storage states. Report a write successful only after commit; never hide failures with in-memory fallback.
+- Generate the offline shell from every static build, including new routes, RSC payloads and chunks. App updates must not clear IndexedDB. Do not automatically force a waiting worker to activate; provide an explicit reload control.
+- Keep service-worker cache deletion scoped to this app's prefix. Preserve the previous shell for already-open tabs. The hosting root and HTTPS policy must be documented; do not assume subpath hosting works.
 
 ## Definition of Done
 
-For code, configuration, or package changes:
-- Correct paths and client/server directives; no server-only imports reachable from a client component.
-- Existing components reused; new components extracted and scoped correctly.
-- Inputs validated, operations authorized, persistence routed through the singleton, and index needs evaluated where applicable.
-- `bun run lint`, `bun run type-check` (`tsc --noEmit`), relevant tests through `bun run test`, and `bun run build` pass.
-- Exercise changed UI at mobile/desktop sizes when applicable; distinguish visual inspection from interaction and unit tests.
-- Record commands and outcomes, including skipped/blocked checks. An unavailable environment does not count as a successful build or integration test.
-- `git diff --check` passes; no secrets, generated output, or unrelated user changes included.
+For code/config/package changes:
+- Scope, directives and prerender boundaries correct; no backend/runtime service dependence or external asset requests.
+- Shared components reused, inputs/records validated, storage/index/migration impact evaluated.
+- `bun run lint`, `bun run type-check`, relevant `bun run test`, `bun run build` and `git diff --check` pass.
+- Exercise changed UI at mobile and desktop sizes. For storage/PWA changes, test real browser persistence, cold offline reloads, navigation and update behavior as relevant. Distinguish unit simulations, interaction, visual QA and native installation; do not claim unperformed device checks.
+- Record commands, results and skipped/blocked checks. Use isolated origins/databases and remove only resources owned by the test.
+- No secrets, generated output or unrelated user changes in the commit.
 
-For documentation-only changes, check local links, consistency, and `git diff --check`; do not rerun application checks without a relevant reason. Add meaningful tests for behavior and risk, not tests that merely mirror reversible text changes.
+For docs-only changes: check local links, consistency and diff; do not rerun app checks without a relevant reason or add tests mirroring text.
 
 ## Permissions and Delivery
 
-- The user authorizes agents to work exclusively on `int` and to create a Conventional Commit and push to `origin/int` after every completed, validated iteration, including planning-only and documentation-only iterations. Do not ask for this permission again for each delivery.
-- Include code and its plan/log updates in the same commit. Review the exact staged files and preserve unrelated user changes. Never commit known-broken work merely to satisfy the closing protocol.
-- Push explicitly with `git push -u origin int` on the first publication and `git push origin int` thereafter. Verify that `origin` reports the same SHA for `refs/heads/int` as the local iteration commit before declaring publication complete. Never force-push.
-- `main` is exclusively human-managed: the user reviews `int`, merges it into `main`, and pushes `main`. Agents must not commit, merge, push, reset, or rebase `main`, or perform that promotion on the user's behalf.
-- If a commit, push, or remote verification fails, preserve validated changes, record the exact pending step, and report the failure. Do not declare publication complete or silently continue accumulating unpublished iterations.
-- This authorization covers the configured remote of the current project and ordinary `int` delivery. It does not authorize production deployment, provisioning infrastructure, scheduled work, or changing remotes. When reusing the template, configure the destination repository's remote before publishing.
-- If `int` has a configured integration deployment triggered by push, follow that project's documented environment policy. Do not assume any deployment exists in this starter.
-- Keep working within the authorized scope. For a material change to architecture, core dependencies, or security posture, finish independent analysis and present the concrete decision for human confirmation.
+- The user authorizes working on `int` and a Conventional Commit/push after every completed, validated iteration, including docs. Do not request this permission again.
+- Commit implementation and planning together; inspect exact staged files, preserve unrelated changes and never commit known-broken work to satisfy protocol.
+- First publication: `git push -u origin int`; later: `git push origin int`. Verify remote `refs/heads/int` equals the local commit SHA before reporting publication. Never force-push.
+- `main` is exclusively human-managed. Agents must not commit, merge, push, reset or rebase it. The user reviews and promotes `int`.
+- On commit/push/verification failure, preserve validated changes, report the exact pending step and do not accumulate another unpublished iteration silently.
+- Authorization covers only this project's configured remote. When copying the template, configure the destination remote before publishing. Do not change remotes, provision hosting, deploy production or schedule automation implicitly.

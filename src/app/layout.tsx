@@ -1,37 +1,43 @@
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import type { Metadata, Viewport } from "next"
+import { PwaProvider } from "@/components/shared/pwa-provider"
 import { ThemeBootstrap } from "@/components/shared/theme-bootstrap"
+import { ThemeProvider } from "@/components/shared/theme-provider"
+import { appConfig } from "@/config/app"
 import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
-
 export const metadata: Metadata = {
-  title: "My Next Template",
-  description: "My template for Next.js projects",
+  title: appConfig.name,
+  description: appConfig.description,
+  applicationName: appConfig.name,
+  appleWebApp: {
+    capable: true,
+    title: appConfig.shortName,
+    statusBarStyle: "default",
+  },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#047857",
 }
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeBootstrap />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
-      >
-        {children}
+      <body className="min-h-screen antialiased">
+        <PwaProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </PwaProvider>
       </body>
     </html>
   )

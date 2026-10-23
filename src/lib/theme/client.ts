@@ -1,5 +1,9 @@
 "use client"
 import { THEME_CHANGE_EVENT, THEME_STORAGE_KEY } from "@/config/theme"
+import {
+  readThemePreference,
+  writeThemePreference,
+} from "@/lib/storage/preferences"
 import { parseThemePreference, themePreferenceSchema } from "@/schemas/theme"
 
 export function getThemeSnapshot() {
@@ -26,15 +30,23 @@ export function subscribeTheme(listener: () => void) {
     window.removeEventListener("storage", onStorage)
   }
 }
-export function saveThemePreference(value: unknown): boolean {
+export async function loadThemePreference() {
+  const theme = (await readThemePreference()) ?? getThemeSnapshot()
+  applyThemePreference(theme)
+}
+
+function applyThemePreference(value: unknown) {
   const theme = themePreferenceSchema.parse(value)
   document.documentElement.setAttribute("data-theme", theme)
-  let persisted = true
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme)
   } catch {
-    persisted = false
+    // IndexedDB remains authoritative if the synchronous startup cache is blocked.
   }
   window.dispatchEvent(new Event(THEME_CHANGE_EVENT))
-  return persisted
+}
+
+export async function saveThemePreference(value: unknown) {
+  await writeThemePreference(value)
+  applyThemePreference(value)
 }

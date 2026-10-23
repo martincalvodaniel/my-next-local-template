@@ -7,6 +7,12 @@
 3. Definir objetivo, `target_paths`, dependencias, aceptación y validación en `iterations.md`. Dividir el trabajo si no permite una entrega coherente.
 4. Leer la guía relevante del Next instalado antes de escribir código. Resolver elecciones rutinarias dentro del alcance; registrar dudas materiales y avanzar en el trabajo independiente.
 
+## Invariantes de la plantilla local
+
+Cada iteración conserva exportación estática, IndexedDB como fuente de datos, instalación y offline sin autenticación ni servicios externos. Revisar `src/lib/storage/AGENTS.md` al tocar persistencia. Definir migraciones no destructivas, errores y recuperación; no añadir datos irremplazables sin diseñar respaldo. Nuevas rutas y recursos entran en la caché del build. No usar Server Actions, proxy ni API remota; el usuario debe autorizar explícitamente cualquier cambio de ese alcance.
+
+Validar PWA con `bun run build` y `bun run start`, no con `next dev`. Registrar por separado recarga offline, persistencia, actualización, inspección visual e instalación nativa. Pruebas simuladas no acreditan estas últimas.
+
 ## Ejecución
 
 Trabajar secuencialmente por defecto. La delegación solo se activa con autorización aplicable, contratos claros y archivos disjuntos; asignar un responsable de integración. No revertir cambios de otros agentes o del usuario.

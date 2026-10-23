@@ -1,28 +1,31 @@
 import Link from "next/link"
-import { requireAuthorizedSession } from "@/lib/auth/session"
+import { appConfig } from "@/config/app"
 
-export async function HomeScreen() {
-  const session = await requireAuthorizedSession()
+export function HomeScreen() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl items-center p-4 sm:p-8">
-      <section className="w-full rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4 py-12 sm:p-8 sm:py-20">
+      <section className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-10 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-          My Next Template
+          {appConfig.name}
         </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">Welcome</h1>
-        <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-          Your account has access as{" "}
-          {session.role === "admin" ? "an administrator" : "a user"}.
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight">
+          Your space. On your device.
+        </h1>
+        <p className="mt-5 leading-7 text-zinc-600 dark:text-zinc-400">
+          A local starting point for your next app. No account needed. Your
+          preferences stay in this browser.
         </p>
-        {session.role === "admin" ? (
-          <Link
-            href="/admin"
-            className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-          >
-            Site administration
-          </Link>
-        ) : null}
+        <Link
+          href="/settings/"
+          className="mt-8 inline-flex min-h-11 items-center rounded-lg bg-emerald-700 px-5 py-3 font-medium text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-600"
+        >
+          Open settings
+        </Link>
       </section>
+      <p className="px-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+        Install from Settings for quick access. Once offline setup is ready, you
+        can reopen this app without a connection.
+      </p>
     </main>
   )
 }

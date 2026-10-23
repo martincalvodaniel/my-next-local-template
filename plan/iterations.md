@@ -2,6 +2,8 @@
 
 El estado de aceptación es independiente de commit, publicación y despliegue. Consultar [workflow.md](workflow.md).
 
+La arquitectura vigente es la plantilla local de `07`, autorizada expresamente por el usuario. Las entregas `00`–`06` documentan el sistema anterior; sus requisitos de Google, roles, MongoDB y rutas protegidas quedan sustituidos. `01` sigue pendiente para el producto que nazca de la copia.
+
 ## 00 — Preparar la plantilla reutilizable
 
 - Estado: `validated`.
@@ -89,3 +91,16 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Aceptación: Home enlaza `/`, Settings conserva su foto y ruta; estado activo exclusivo, sin overflow ni nuevas dependencias.
 - Validación: lint, tipos, suite, build y navegación real móvil/escritorio.
 - Cierre: commit/push en `int` con verificación remota.
+
+## 07 — Plantilla local instalable
+
+- Estado: `validated` (aceptación local); publicación remota bloqueada por acceso y revisión automática, pendiente revisión humana del remoto antes de otro intento.
+- Objetivo: sustituir autenticación y persistencia remotas por una base estática local con IndexedDB y PWA, reutilizable mediante copia de archivos.
+- `target_paths`: `src/**`, `public/**`, `scripts/**`, `test/**`, `package.json`, `bun.lock`, `next.config.ts`, `.env.example` (retirada), `README.md`, `AGENTS.md`, `plan/**`.
+- Dependencias: petición humana explícita que autoriza retirar Google/MongoDB y añadir dependencias necesarias; guías del Next instalado sobre exportación estática y PWA.
+- Diseño: conservar Next/React/Tailwind/Zod; añadir `idb` como envoltorio mínimo de IndexedDB y `fake-indexeddb` solo para pruebas. Exportación estática, fuentes del sistema, service worker generado desde los archivos compilados, activación de actualizaciones con consentimiento. Tema en localStorage solo como caché síncrona de arranque; fuente persistente en IndexedDB.
+- Aceptación: sin login, roles, API, servidor de aplicación, secretos ni servicios externos; inicio y ajustes públicos; preferencia de tema en IndexedDB con errores visibles; manifest/iconos e instalación progresiva; rutas y recursos disponibles offline tras preparar la caché; actualizaciones sin borrar datos; reglas agénticas impiden reintroducir backend o dependencias remotas sin autorización.
+- Validación: lint, tipos, pruebas de persistencia/validación/caché, build estático, instalación reproducible, revisión y navegación móvil/escritorio, recarga offline de ambas rutas y persistencia en navegador. Registrar límites de instalación nativa y cuotas del navegador.
+- Cierre: commit/push en `int` y verificación de SHA remoto; `main` reservada al usuario.
+
+- Evidencia final: 14 pruebas/54 aserciones, lint, tipos, Knip, instalación frozen y build aprobados; build adicional sin archivos de entorno. Navegador: vistas 390/1280px, rutas offline sin visita previa a Settings, persistencia tras reinicio, sincronización de tema y actualización consentida sin pérdida de datos. Instalación física no ejecutada. Ver [iteration-log.md](iteration-log.md).
