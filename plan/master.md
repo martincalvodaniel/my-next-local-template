@@ -50,3 +50,7 @@ Las rutas protegidas comparten una única navegación responsive: inferior con s
 ## Idioma de interfaz en 05
 
 Por petición humana, toda la UI usa inglés: navegación, cuenta, tema, acceso, solicitudes, administración, estados vacíos, errores y textos accesibles. El documento declara `lang="en"`. README y planificación pueden seguir en español; no se añade infraestructura de traducciones ni se modifican rutas, roles o valores persistidos.
+
+## Home en navegación en 06
+
+Por petición humana, el registro compartido incluye Home (`/`) y Settings (`/settings`) en ambas variantes responsive. Home utiliza un icono local de casa y solo se activa en la raíz; Settings conserva la foto del perfil social y el respaldo de iniciales.

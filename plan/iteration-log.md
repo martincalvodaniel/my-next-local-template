@@ -102,3 +102,11 @@
 - UI real: Settings y tema en móvil 390px sin overflow; documento `lang=en`; administración en escritorio, estado vacío, solicitud/pending, cambio de cuenta y login con error AccessDenied en inglés. Identidad y datos exclusivamente ficticios; sin login Google interactivo.
 - Evidencia fuera de Git: `/private/tmp/template-settings-english-mobile.png` y `/private/tmp/template-admin-english-desktop.png`. Viewport restaurado y pestaña propia cerrada; servidores y contenedor temporal retirados.
 - Publicación: commit/push en `int` y verificación remota al cierre; `main` intacta.
+
+## 06 — Home en navegación · 2026-10-23
+
+- Estado: `validated`. Home (`/`) añadido al registro único con icono local; Settings conserva su avatar. Estado activo raíz específico y exclusivo.
+- Lint, tipos, 37 pruebas/93 aserciones, `bun run build --webpack` y `git diff --check` aprobados. Sin nuevas dependencias ni cambios de permisos/datos.
+- Navegador compilado con sesión admin ficticia: Settings→Home a 390px, solo Home activo y sin overflow; Home→Settings a 1280px, solo Settings activo y barra superior sticky. Captura: `/private/tmp/template-home-navigation-mobile.png` fuera de Git.
+- Viewport restaurado, pestaña propia cerrada y servidor temporal retirado; sin acceso a Mongo ni login Google real.
+- Publicación: commit/push en `int` y verificación remota al cierre; `main` intacta.

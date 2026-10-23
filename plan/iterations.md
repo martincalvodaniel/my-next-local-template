@@ -80,3 +80,12 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Aceptación: textos visibles/accesibles, errores y estados en inglés, `lang="en"`; sin cambios de lógica, rutas ni valores guardados.
 - Validación: revisión completa del texto en fuente, lint, tipos, suite, build y comprobación compilada móvil/escritorio.
 - Cierre: commit/push en `int` y verificación remota.
+
+## 06 — Home en navegación
+
+- Estado: `validated`.
+- Objetivo: añadir Home al registro compartido de navegación móvil/escritorio, con icono local y estado activo solo en la raíz.
+- `target_paths`: `src/config/navigation.ts`, `src/components/shared/app-navigation.tsx`, `src/components/ui/home-icon.tsx`, `README.md`, `plan/**`.
+- Aceptación: Home enlaza `/`, Settings conserva su foto y ruta; estado activo exclusivo, sin overflow ni nuevas dependencias.
+- Validación: lint, tipos, suite, build y navegación real móvil/escritorio.
+- Cierre: commit/push en `int` con verificación remota.
