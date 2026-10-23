@@ -54,7 +54,7 @@ Abre [localhost:3000](http://localhost:3000). La ruta `/` requiere sesión y red
 
 ## Navegación y ajustes
 
-Las rutas autorizadas comparten una barra inferior en móvil y superior desde 768px. Por ahora, el único destino es **Ajustes** (`/settings`), con avatar de iniciales y estado activo accesible. Los destinos se definen una sola vez en `src/config/navigation.ts`. La barra móvil respeta el área segura y el contenido reserva espacio para no quedar cubierto.
+Las rutas autorizadas comparten una barra inferior en móvil y superior desde 768px. Por ahora, el único destino es **Ajustes** (`/settings`), con la foto del perfil de Google y estado activo accesible. Si falta la imagen o no carga, se muestran las iniciales como respaldo. Los destinos se definen una sola vez en `src/config/navigation.ts`. La barra móvil respeta el área segura y el contenido reserva espacio para no quedar cubierto.
 
 Ajustes muestra el nombre, correo y rol de la sesión verificada y autorizada. Incluye cambio de cuenta y, para administradores, enlace a la gestión del sitio. La ruta mantiene las comprobaciones de autorización en servidor.
 

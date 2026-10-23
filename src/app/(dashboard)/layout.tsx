@@ -9,7 +9,11 @@ export default async function DashboardLayout({
   const session = await requireAuthorizedSession()
 
   return (
-    <AppShell name={session.user.name} email={session.user.email}>
+    <AppShell
+      name={session.user.name}
+      email={session.user.email}
+      image={session.user.image}
+    >
       {children}
     </AppShell>
   )

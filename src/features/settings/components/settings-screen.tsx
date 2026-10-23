@@ -15,7 +15,11 @@ export async function SettingsScreen() {
       >
         <h2 className="mb-4 text-lg font-semibold">Tu cuenta</h2>
         <div className="flex min-w-0 items-center gap-3">
-          <AccountAvatar name={session.user.name} email={session.user.email} />
+          <AccountAvatar
+            name={session.user.name}
+            email={session.user.email}
+            image={session.user.image}
+          />
           <div className="min-w-0">
             <p className="break-words font-medium">{session.user.name}</p>
             <p className="break-all text-sm text-zinc-600 dark:text-zinc-400">

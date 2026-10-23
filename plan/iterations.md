@@ -62,3 +62,12 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Aceptación: un único registro de destinos, estado activo accesible, safe areas y contenido libre de solapamientos; ajustes protegidos con identidad/rol del servidor; tema persistente local, sistema dinámico y arranque anterior a hidratación; enlace admin solo para administradores.
 - Validación: pruebas de tema/arranque, lint, tipos, suite, build y navegación/interacción móvil/escritorio con identidad ficticia.
 - Cierre: commit/push en `int` con verificación remota.
+
+## 04a — Foto del perfil social en Ajustes
+
+- Estado: `validated`.
+- Objetivo: mostrar la foto de Google en el icono de Ajustes y la tarjeta de cuenta, con iniciales si falta o falla.
+- `target_paths`: `src/components/shared/{account-avatar,app-navigation,app-shell}.tsx`, `src/app/(dashboard)/layout.tsx`, `src/features/settings/components/settings-screen.tsx`, `README.md`, `plan/**`.
+- Aceptación: imagen de sesión transmitida a ambos avatares, dimensiones estables, fallback por error y recuperación ante nueva imagen; sin cambiar permisos ni añadir dependencias.
+- Validación: lint, tipos, suite, build y navegador con imagen ficticia y fallo de carga.
+- Cierre: commit/push en `int` y verificación remota.

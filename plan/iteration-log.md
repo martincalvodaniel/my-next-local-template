@@ -79,3 +79,13 @@
 - Limpieza: viewport restaurado, dos pestañas propias cerradas, servidor/gateway y contenedor Mongo propios retirados. Pestaña preexistente del usuario conservada.
 - Publicación: commit/push en `int` y verificación del SHA remoto al cierre; `main` exclusivamente humano. Sin hashes anticipados.
 - Próximo paso: revisión humana de `int`; producto de destino pendiente de definición en `01`.
+
+## 04a — Foto del perfil social en Ajustes · 2026-10-23
+
+- Estado: `validated`.
+- Corrección humana: el icono de Ajustes debe mostrar la foto del login social.
+- Cambio: se transmite `session.user.image` desde el layout autorizado hasta navegación/avatar y se utiliza también en la tarjeta de cuenta. `next/image` sin optimización, 32×32, circular, decorativo y sin referrer, siguiendo el patrón de referencia. Iniciales si no hay URL o si falla su carga; una URL nueva puede volver a intentarse.
+- Validación: lint, tipos, 37 pruebas/93 aserciones y `bun run build --webpack` aprobados. Sin nuevas pruebas unitarias que reflejen solamente props; comprobación directa en navegador del comportamiento de imagen.
+- UI compilada: sesión ficticia con imagen local propia cargada en ambos avatares a 390px; fallo HTTP 404 y ausencia de URL muestran iniciales sin imagen rota. Imagen correcta al volver a una sesión con URL válida; carga confirmada en escritorio a 1280px. No se ha probado un nuevo login Google interactivo ni usado una foto real del usuario.
+- Evidencia: `/private/tmp/template-social-avatar-mobile.png`, fuera de Git. Viewport restaurado y pestaña propia cerrada; servidores temporales retirados. No ha sido necesario conectar con MongoDB: sesión admin ficticia, sin cambios de autorización ni persistencia.
+- Publicación: commit/push en `int` y verificación remota al cierre; `main` intacta.
