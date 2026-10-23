@@ -2,7 +2,12 @@ import assert from "node:assert/strict"
 import { makeSignature, signJWT } from "better-auth/crypto"
 import { getAuthEnv, getDatabaseEnv } from "@/config/env"
 import { closeDatabaseConnection } from "@/lib/db/client"
-import { hasUserAccess, revokeUserAccess } from "@/lib/db/user-access"
+import {
+  getAccessRequestStatus,
+  hasUserAccess,
+  listAccessRequests,
+  revokeUserAccess,
+} from "@/lib/db/user-access"
 
 const configuration = getAuthEnv()
 const database = getDatabaseEnv()
@@ -65,9 +70,27 @@ function decodeHtml(value: string) {
     .replaceAll("&amp;", "&")
 }
 
-function actionForm(html: string, email: string, operation: string) {
-  const form = html.match(/<form[\s\S]*?<\/form>/)?.[0]
-  assert.ok(form, "Rendered admin grant form is required")
+function actionForm(
+  html: string,
+  email: string,
+  operation: string,
+  requestId?: string
+) {
+  const forms = Array.from(
+    html.matchAll(/<form[\s\S]*?<\/form>/g),
+    (match) => match[0]
+  )
+  const form = forms.find((candidate) =>
+    requestId
+      ? candidate.includes(requestId)
+      : candidate.includes(
+          `value="${operation === "revoke" ? "grant" : operation}"`
+        )
+  )
+  assert.ok(
+    form,
+    `Rendered form required for ${operation}; request ID supplied: ${Boolean(requestId)}; forms: ${forms.length}`
+  )
   const data = new FormData()
   for (const input of form.matchAll(/<input[^>]*>/g)) {
     const name = input[0].match(/name="([^"]+)"/)?.[1]
@@ -80,7 +103,10 @@ function actionForm(html: string, email: string, operation: string) {
     "Rendered Server Action metadata is required"
   )
   data.set("email", email)
-  data.set("operation", operation)
+  if (requestId) {
+    data.set("decision", operation)
+    data.set("requestId", requestId)
+  } else data.set("operation", operation)
   return data
 }
 
@@ -100,7 +126,7 @@ try {
       ?.includes("/auth/signin")
   )
   assert.ok(
-    (await request("/", user)).headers.get("location")?.includes("/auth/signin")
+    (await request("/", user)).headers.get("location")?.includes("/auth/access")
   )
   await request(
     "/admin",
@@ -133,15 +159,116 @@ try {
   )
   assert.equal(await hasUserAccess("normal@example.com"), false)
   assert.ok(
-    (await request("/", user)).headers.get("location")?.includes("/auth/signin")
+    (await request("/", user)).headers.get("location")?.includes("/auth/access")
   )
   assert.ok(
     (await request("/admin", user)).headers
       .get("location")
-      ?.includes("/auth/signin")
+      ?.includes("/auth/access")
   )
+  const outsider = await createCookie("requester@example.com")
+  const requestResponse = await request("/auth/access", outsider)
+  assert.equal(requestResponse.status, 200)
+  const requestHtml = await requestResponse.text()
+  assert.ok(requestHtml.includes("Solicitar acceso"))
+  assert.ok(
+    (await request("/auth/signin", outsider)).headers
+      .get("location")
+      ?.includes("/auth/access")
+  )
+  const forgedRequest = actionForm(requestHtml, "victim@example.com", "request")
+  await request("/auth/access", outsider, forgedRequest)
+  assert.equal(await getAccessRequestStatus("victim@example.com"), null)
+  assert.equal(await getAccessRequestStatus("requester@example.com"), "pending")
+  assert.equal(await hasUserAccess("requester@example.com"), false)
+  const firstRequest = (await listAccessRequests()).entries.find(
+    (entry) => entry.email === "requester@example.com"
+  )
+  assert.ok(firstRequest)
+  await request(
+    "/auth/access",
+    outsider,
+    actionForm(requestHtml, "ignored@example.com", "request")
+  )
+  assert.equal(
+    (await listAccessRequests()).entries.find(
+      (entry) => entry.email === "requester@example.com"
+    )?.requestId,
+    firstRequest.requestId
+  )
+  const reviewHtml = await (await request("/admin", admin)).text()
+  await request(
+    "/admin",
+    user,
+    actionForm(
+      reviewHtml,
+      firstRequest.email,
+      "approve",
+      firstRequest.requestId
+    )
+  )
+  assert.equal(await hasUserAccess(firstRequest.email), false)
+  await request(
+    "/admin",
+    admin,
+    actionForm(reviewHtml, firstRequest.email, "reject", firstRequest.requestId)
+  )
+  assert.equal(await getAccessRequestStatus(firstRequest.email), "rejected")
+  const rejectedHtml = await (await request("/auth/access", outsider)).text()
+  assert.ok(rejectedHtml.includes("rechazada"))
+  await request(
+    "/auth/access",
+    outsider,
+    actionForm(rejectedHtml, firstRequest.email, "request")
+  )
+  const secondRequest = (await listAccessRequests()).entries.find(
+    (entry) => entry.email === firstRequest.email
+  )
+  assert.ok(secondRequest)
+  assert.notEqual(secondRequest.requestId, firstRequest.requestId)
+  await request(
+    "/admin",
+    admin,
+    actionForm(
+      reviewHtml,
+      firstRequest.email,
+      "approve",
+      firstRequest.requestId
+    )
+  )
+  assert.equal(await hasUserAccess(firstRequest.email), false)
+  const refreshedReview = await (await request("/admin", admin)).text()
+  await request(
+    "/admin",
+    admin,
+    actionForm(
+      refreshedReview,
+      secondRequest.email,
+      "approve",
+      secondRequest.requestId
+    )
+  )
+  assert.equal(await hasUserAccess(secondRequest.email), true)
+  assert.equal((await request("/", outsider)).status, 200)
+  assert.equal(
+    (await request("/auth/access", outsider)).headers.get("location"),
+    "/"
+  )
+  assert.equal(
+    (await listAccessRequests()).entries.some(
+      (entry) => entry.email === secondRequest.email
+    ),
+    false
+  )
+  const unverifiedRequest = await createCookie("unverified@example.com", false)
+  await request(
+    "/auth/access",
+    unverifiedRequest,
+    actionForm(requestHtml, "unverified@example.com", "request")
+  )
+  assert.equal(await getAccessRequestStatus("unverified@example.com"), null)
   console.log(
-    "Compiled Next access checks: PASS (admin/user/anonymous/unverified routes, real Server Action grants/revocations, denied privilege escalation, existing-cookie revocation)"
+    "Compiled Next access checks: PASS (roles, verified identity, real grants/revocations, self-only requests, duplicate submissions, rejection/resubmission, stale decisions, approval and access)"
   )
 } finally {
   await closeDatabaseConnection()

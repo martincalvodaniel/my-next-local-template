@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Plantilla técnica sin dominio de negocio definido. Incluye Google OAuth con cookies de sesión, administradores en `ALLOWED_EMAILS`, usuarios normales autorizados en MongoDB y administración protegida en `/admin`. La colección `user_access` tiene un índice único por correo normalizado y listado paginado. El inventario y la configuración se describen en [README.md](../README.md).
+Plantilla técnica sin dominio de negocio definido. Incluye Google OAuth con cookies de sesión, administradores en `ALLOWED_EMAILS`, usuarios normales autorizados en MongoDB y administración protegida en `/admin`. La colección `user_access` conserva permisos y solicitudes de acceso, con índice único por correo normalizado e índice de estado/correo para el listado paginado de pendientes. El inventario y la configuración se describen en [README.md](../README.md).
 
 La autenticación no utiliza un adaptador persistente MongoDB. No existen funcionalidades offline, sincronización, PDF ni despliegue preconfigurado. Estos elementos requieren alcance y decisiones propios si el producto los necesita.
 
@@ -38,3 +38,7 @@ La preparación de la plantilla se registra como `00`. El siguiente trabajo de p
 ## Acceso implementado en 02
 
 La autorización humana redefine `ALLOWED_EMAILS` como lista de administradores. `/admin` permite dar de alta y revocar correos normales mediante acciones de servidor autorizadas y validadas con Zod. Las sesiones siguen sin adaptador persistente: se persisten permisos, no identidades ni sesiones Better Auth. Los roles se calculan en servidor por petición; la revocación deniega el siguiente acceso con cookies ya emitidas. La navegación de inicio muestra administración únicamente a administradores. La nueva interfaz usa español, manteniendo la personalización del resto de la plantilla pendiente.
+
+## Solicitudes implementadas en 03
+
+Una identidad Google verificada sin permiso puede crear su propia solicitud desde `/auth/access`; no obtiene autorización de aplicación. Administración lista las pendientes y permite aceptar o rechazar. El estado vive junto al permiso en `user_access`, de modo que aceptar y conceder acceso normal es una única escritura condicional por correo/UUID/estado pendiente. Los registros anteriores sin estado siguen aprobados. Repetir una petición pendiente conserva su UUID; reenviar tras rechazo genera otro y una decisión antigua no puede aplicarse a él. No hay envío de correos ni promoción a administrador.

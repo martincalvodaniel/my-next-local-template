@@ -56,6 +56,10 @@ Abre [localhost:3000](http://localhost:3000). La ruta `/` requiere sesión y red
 
 `ALLOWED_EMAILS` determina exclusivamente los administradores. Estos pueden entrar en `/admin` desde el enlace del inicio y conceder o revocar acceso a otros correos de Google. Los usuarios normales se guardan en `user_access`, no pueden administrar el sitio y no pueden promoverse mediante campos enviados por el navegador.
 
+Una cuenta de Google verificada sin permiso se dirige a `/auth/access`, donde puede pulsar **Solicitar acceso**, consultar si está pendiente o rechazada y cambiar de cuenta. Identificarse con Google no concede acceso al producto. La solicitud usa exclusivamente el correo de la sesión; nunca un correo enviado por el navegador. No se envía un email: la solicitud se guarda en MongoDB y aparece en **Solicitudes pendientes** dentro de `/admin`.
+
+Los administradores pueden **Aceptar** (concede acceso normal) o **Rechazar** (no concede acceso). La decisión solo afecta a la versión pendiente revisada; una pestaña antigua no puede aceptar una nueva solicitud creada después de un rechazo. Los envíos repetidos mientras está pendiente no crean duplicados. Tras un rechazo, la cuenta puede volver a solicitarlo; tras una aceptación, puede usar **Comprobar acceso** sin repetir el login.
+
 Los correos se recortan y convierten a minúsculas; las altas repetidas son idempotentes. La lista se pagina de 50 en 50. Los administradores no se modifican desde esta lista: se gestionan cambiando `ALLOWED_EMAILS` en el entorno y reiniciando/desplegando la aplicación según el hosting.
 
 La sesión debe pertenecer a un correo verificado por el proveedor. Cada petición protegida consulta el permiso actual del usuario normal; la revocación afecta al siguiente acceso al servidor aunque conserve cookies válidas. No borra la identidad de Google, cierra las cookies en otros dispositivos ni interrumpe una petición ya en curso. El contenido ya mostrado en una pestaña puede seguir visible hasta navegar o recargar.
@@ -93,14 +97,14 @@ bun run build
 bun run db:ensure-indexes
 ```
 
-Este comando conecta a la base configurada y aplica los índices registrados. `getDatabase()` también los aplica en el primer acceso de cada proceso. Revisa siempre el entorno de destino; se registra `email_unique` sobre `user_access.email`, sin migraciones destructivas automáticas. El comando usa la condición `react-server` para ejecutar módulos protegidos con `server-only` fuera de Next.
+Este comando conecta a la base configurada y aplica los índices registrados. `getDatabase()` también los aplica en el primer acceso de cada proceso. Revisa siempre el entorno de destino; se registran `email_unique` sobre `user_access.email` y `status_asc_email_asc` para paginar solicitudes pendientes, sin migraciones destructivas automáticas. El comando usa la condición `react-server` para ejecutar módulos protegidos con `server-only` fuera de Next.
 
 Otros comandos: `bun run lint:fix`, `bun run format`, `bun run test:watch` y `bun run knip` (análisis auxiliar de código sin uso).
 
 ## Pruebas de acceso con recursos aislados
 
-- `src/lib/db/user-access.integration.ts`: ejecutar explícitamente con `bun --no-env-file --conditions=react-server src/lib/db/user-access.integration.ts`, proporcionando `MONGODB_URI` de un MongoDB desechable en `127.0.0.1:<puerto>` y `MONGODB_DB=template_access_test_<identificador>`. Comprueba concurrencia, reconexión, revocación, paginación e índice. Usa una base nueva por ejecución y elimina únicamente los recursos de prueba al terminar.
-- `test/access-http.ts`: ejecutar con `bun --no-env-file --conditions=react-server test/access-http.ts` contra un `next start` compilado y aislado. Ambos procesos deben compartir las variables de prueba: base/origen loopback, secreto aleatorio exclusivo, credenciales Google ficticias y `ALLOWED_EMAILS=admin@example.com`. Crea cookies firmadas de prueba y verifica las rutas y Server Actions reales sin llamar a Google. Nunca ejecutarlo contra una aplicación o base de usuario.
+- `src/lib/db/user-access.integration.ts`: ejecutar explícitamente con `bun --no-env-file --conditions=react-server src/lib/db/user-access.integration.ts`, proporcionando `MONGODB_URI` de un MongoDB desechable en `127.0.0.1:<puerto>` y `MONGODB_DB=template_access_test_<identificador>`. Comprueba concurrencia, reconexión, revocación, solicitudes idempotentes, decisiones atómicas/obsoletas, compatibilidad con permisos anteriores, paginación e índices. Usa una base nueva por ejecución y elimina únicamente los recursos de prueba al terminar.
+- `test/access-http.ts`: ejecutar con `bun --no-env-file --conditions=react-server test/access-http.ts` contra un `next start` compilado y aislado. Ambos procesos deben compartir las variables de prueba: base/origen loopback, secreto aleatorio exclusivo, credenciales Google ficticias y `ALLOWED_EMAILS=admin@example.com`. Crea cookies firmadas de prueba y verifica rutas, solicitudes propias, rechazo/reenvío, aprobación y Server Actions reales sin llamar a Google. Nunca ejecutarlo contra una aplicación o base de usuario.
 
 Las dos entradas rechazan destinos que no cumplan sus guardias de aislamiento y no forman parte de `bun run test`. Se necesita aportar las variables al proceso explícitamente: `--no-env-file` evita cargar credenciales locales. Estas pruebas no hacen limpieza destructiva automática; elimina el contenedor o base desechable que hayas creado.
 
@@ -113,3 +117,7 @@ Ejemplo de petición inicial:
 > Lee AGENTS.md y plan/master.md. Quiero crear [producto] para [usuarios]. Concreta el MVP, las decisiones pendientes y las primeras iteraciones. Implementa la primera entrega autorizada y valida su aceptación.
 
 El trabajo es secuencial por defecto. El paralelismo requiere autorización y archivos asignados sin solapamientos. Los agentes trabajan siempre en `int` y cierran cada iteración validada, incluida documentación, con un Conventional Commit y push a `origin/int`, verificando el SHA remoto. Tú revisas `int` y haces el merge y push de `main` cuando lo consideres correcto. Al reutilizar la plantilla, configura primero el remoto del nuevo proyecto. El trabajo desatendido y los despliegues requieren autorización específica.
+
+### Compatibilidad del registro de acceso
+
+`user_access` mantiene un único documento por correo normalizado. Los permisos anteriores sin `status` se consideran aprobados. Los nuevos estados son `pending`, `rejected` y `approved`; únicamente `approved` concede acceso normal. Las solicitudes añaden `requestId` (UUID), `requestedAt` y, al resolverse, `resolvedAt`. La aceptación cambia el estado en una única escritura condicional: no necesita transacciones multirregistro ni una réplica MongoDB. Revocar elimina el permiso y una posterior solicitud obtiene otra identidad, por lo que las decisiones antiguas no se reaplican.

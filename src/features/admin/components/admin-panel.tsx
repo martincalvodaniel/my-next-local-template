@@ -1,13 +1,21 @@
 import Link from "next/link"
 import { AccessForm } from "@/features/admin/components/access-form"
-import type { UserAccessPage } from "@/types/access"
+import { PendingRequests } from "@/features/admin/components/pending-requests"
+import type { AccessRequestPage, UserAccessPage } from "@/types/access"
 
 interface AdminPanelProps {
   users: UserAccessPage
   hasCursor: boolean
+  requests: AccessRequestPage
+  hasRequestsCursor: boolean
 }
 
-export function AdminPanel({ users, hasCursor }: AdminPanelProps) {
+export function AdminPanel({
+  users,
+  hasCursor,
+  requests,
+  hasRequestsCursor,
+}: AdminPanelProps) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4 sm:p-8">
       <Link
@@ -25,6 +33,7 @@ export function AdminPanel({ users, hasCursor }: AdminPanelProps) {
           administradores se definen en ALLOWED_EMAILS.
         </p>
       </header>
+      <PendingRequests requests={requests} hasCursor={hasRequestsCursor} />
       <section
         aria-label="Conceder acceso"
         className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"

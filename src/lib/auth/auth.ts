@@ -3,7 +3,6 @@ import "server-only"
 import { betterAuth } from "better-auth"
 import { nextCookies } from "better-auth/next-js"
 import { getAuthEnv } from "@/config/env"
-import { getAccessRole } from "@/lib/auth/access"
 
 const authEnv = getAuthEnv()
 
@@ -33,7 +32,8 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          if (!user.emailVerified || !(await getAccessRole(user.email))) {
+          // Verified identity may request access; application authorization is separate.
+          if (!user.emailVerified) {
             return false
           }
         },

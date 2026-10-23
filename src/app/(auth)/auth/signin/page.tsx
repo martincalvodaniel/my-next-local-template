@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { SignInCard } from "@/features/auth/components/sign-in-card"
 import { getSafeCallbackUrl } from "@/lib/auth/callback-url"
-import { getAuthorizedSession } from "@/lib/auth/session"
+import { getAuthorizedSession, getVerifiedSession } from "@/lib/auth/session"
 
 interface SignInPageProps {
   searchParams: Promise<{
@@ -34,6 +34,8 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   if (session) {
     redirect(callbackUrl)
   }
+
+  if (await getVerifiedSession()) redirect("/auth/access")
 
   return (
     <SignInCard

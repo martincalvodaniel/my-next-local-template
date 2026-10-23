@@ -20,6 +20,11 @@ export interface IndexSpec {
 export const INDEX_SPECS: readonly IndexSpec[] = [
   {
     collection: "user_access",
+    keys: { status: 1, email: 1 },
+    options: { name: "status_asc_email_asc" },
+  },
+  {
+    collection: "user_access",
     keys: { email: 1 },
     options: { name: "email_unique", unique: true },
   },

@@ -41,3 +41,14 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Aceptación: administradores solo desde entorno; usuarios normales con alta/listado/revocación persistente; correos normalizados e índice único; denegación por defecto; autorización de servidor en cada operación y ruta; revocación aplicada en el siguiente acceso incluso con sesión abierta; errores saneados y UI accesible.
 - Validación: pruebas de permisos/contratos/mutaciones, evaluación de índice y persistencia, lint, tipos, build y revisión UI móvil/escritorio. Distinguir integración real de dobles de prueba.
 - Cierre: commit y push en `int`, verificación del SHA remoto; `main` exclusivamente humano.
+
+## 03 — Solicitudes de acceso
+
+- Estado: `validated`.
+- Objetivo: permitir solicitar acceso a una cuenta Google verificada sin permiso y resolver solicitudes pendientes en administración.
+- `target_paths`: `src/lib/auth/**`, `src/lib/db/**`, `src/features/auth/**`, `src/features/admin/**`, `src/schemas/**`, `src/types/**`, `src/app/(auth)/**`, `test/access-http.ts`, `README.md`, `AGENTS.md`, `plan/**`.
+- Dependencias: `02`, separación entre identidad verificada y autorización de aplicación.
+- Aceptación: correo obtenido exclusivamente de sesión verificada; solicitud idempotente; pantalla de estado sin acceso al producto; listado admin paginado; aceptación/rechazo autorizados y atómicos; decisiones obsoletas no afectan nuevas solicitudes; permisos anteriores compatibles; pruebas de rutas y acciones reales.
+- Diseño: extender `user_access` con estado y UUID de solicitud. Un solo documento hace atómica la aceptación y la concesión, sin exigir transacciones multirregistro ni réplica Mongo. Los documentos previos sin estado conservan acceso.
+- Validación: contratos/servicios, Mongo aislado con carreras y compatibilidad, Next compilado con cookies propias, UI móvil/escritorio, lint, tipos, build y diff.
+- Cierre: commit/push en `int` y verificación del SHA remoto; `main` exclusivamente humano.

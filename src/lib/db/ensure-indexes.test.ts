@@ -10,13 +10,22 @@ import {
 } from "./ensure-indexes"
 
 describe("MongoDB index specifications", () => {
+  it("indexes pending request pagination by status and email", () => {
+    expect(
+      INDEX_SPECS.find((spec) => spec.options.name === "status_asc_email_asc")
+    ).toEqual({
+      collection: "user_access",
+      keys: { status: 1, email: 1 },
+      options: { name: "status_asc_email_asc" },
+    })
+  })
   it("the application index registry is valid", () => {
     expect(() => validateIndexSpecs(INDEX_SPECS)).not.toThrow()
   })
 
   it("registers unique normalized email access and supports email ordering", () => {
     expect(
-      INDEX_SPECS.find((spec) => spec.collection === "user_access")
+      INDEX_SPECS.find((spec) => spec.options.name === "email_unique")
     ).toEqual({
       collection: "user_access",
       keys: { email: 1 },

@@ -1,11 +1,11 @@
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { AdminPanel } from "@/features/admin/components/admin-panel"
 import { requireAdminSession } from "@/lib/auth/session"
-import { listUserAccess } from "@/lib/db/user-access"
+import { listAccessRequests, listUserAccess } from "@/lib/db/user-access"
 import { userAccessQuerySchema } from "@/schemas/user-access"
 
 interface AdminScreenProps {
-  query: { after?: string | string[] }
+  query: { after?: string | string[]; requestsAfter?: string | string[] }
 }
 
 export async function AdminScreen({ query }: AdminScreenProps) {
@@ -17,9 +17,17 @@ export async function AdminScreen({ query }: AdminScreenProps) {
     )
   }
   try {
-    const users = await listUserAccess(parsed.data.after)
+    const [users, requests] = await Promise.all([
+      listUserAccess(parsed.data.after),
+      listAccessRequests(parsed.data.requestsAfter),
+    ])
     return (
-      <AdminPanel users={users} hasCursor={parsed.data.after !== undefined} />
+      <AdminPanel
+        users={users}
+        hasCursor={parsed.data.after !== undefined}
+        requests={requests}
+        hasRequestsCursor={parsed.data.requestsAfter !== undefined}
+      />
     )
   } catch {
     return (

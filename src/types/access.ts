@@ -14,3 +14,16 @@ export interface AccessActionState {
   status: "idle" | "success" | "error"
   message: string
 }
+
+export type AccessRequestStatus = "pending" | "rejected" | "approved"
+
+export interface AccessRequestEntry {
+  email: string
+  requestId: string
+  requestedAt: string
+}
+
+export interface AccessRequestPage {
+  entries: AccessRequestEntry[]
+  nextCursor: string | null
+}
