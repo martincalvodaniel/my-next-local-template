@@ -23,25 +23,24 @@ export async function requestAccess(
     if (!email.success)
       return {
         status: "error",
-        message:
-          "Inicia sesión con una cuenta de Google verificada para solicitar acceso.",
+        message: "Sign in with a verified Google account to request access.",
       }
     if (!submitAccessRequestSchema.safeParse(input).success)
-      return { status: "error", message: "La solicitud no es válida." }
+      return { status: "error", message: "Invalid request." }
     if (await dependencies.getRole(email.data))
       return {
         status: "error",
-        message: "Tu cuenta ya tiene acceso. Vuelve al inicio.",
+        message: "Your account already has access. Return to the home page.",
       }
     await dependencies.submit(email.data)
     return {
       status: "success",
-      message: "Solicitud enviada. Un administrador debe revisarla.",
+      message: "Request sent. An administrator needs to review it.",
     }
   } catch {
     return {
       status: "error",
-      message: "No se ha podido enviar la solicitud. Inténtalo de nuevo.",
+      message: "Could not send the request. Please try again.",
     }
   }
 }

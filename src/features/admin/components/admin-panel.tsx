@@ -22,36 +22,36 @@ export function AdminPanel({
         href="/"
         className="w-fit rounded text-sm underline focus-visible:outline-2 focus-visible:outline-offset-2"
       >
-        Volver al inicio
+        Back to home
       </Link>
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Administración del sitio
+          Site administration
         </h1>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Gestiona los correos que pueden entrar como usuarios normales. Los
-          administradores se definen en ALLOWED_EMAILS.
+          Manage the email addresses that can sign in as regular users.
+          Administrators are defined in ALLOWED_EMAILS.
         </p>
       </header>
       <PendingRequests requests={requests} hasCursor={hasRequestsCursor} />
       <section
-        aria-label="Conceder acceso"
+        aria-label="Grant access"
         className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
       >
-        <h2 className="mb-4 text-lg font-semibold">Conceder acceso</h2>
+        <h2 className="mb-4 text-lg font-semibold">Grant access</h2>
         <AccessForm />
       </section>
-      <section aria-label="Usuarios autorizados" className="min-w-0">
-        <h2 className="mb-3 text-lg font-semibold">Usuarios autorizados</h2>
+      <section aria-label="Authorized users" className="min-w-0">
+        <h2 className="mb-3 text-lg font-semibold">Authorized users</h2>
         <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Revocar el acceso impide continuar en el siguiente acceso al servidor,
-          incluso con una sesión abierta.
+          Revoking access blocks the next server request, even if the user is
+          already signed in.
         </p>
         {users.entries.length === 0 ? (
           <p className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
             {hasCursor
-              ? "No hay más usuarios en esta página."
-              : "Todavía no hay usuarios normales autorizados."}
+              ? "There are no more users on this page."
+              : "No regular users have been granted access yet."}
           </p>
         ) : (
           <ul className="flex flex-col gap-3">
@@ -66,16 +66,13 @@ export function AdminPanel({
             ))}
           </ul>
         )}
-        <nav
-          aria-label="Páginas de usuarios"
-          className="mt-4 flex flex-wrap gap-4"
-        >
+        <nav aria-label="User pages" className="mt-4 flex flex-wrap gap-4">
           {hasCursor ? (
             <Link
               href="/admin"
               className="min-h-11 rounded px-2 py-3 text-sm underline focus-visible:outline-2"
             >
-              Primera página
+              First page
             </Link>
           ) : null}
           {users.nextCursor ? (
@@ -83,7 +80,7 @@ export function AdminPanel({
               href={`/admin?after=${encodeURIComponent(users.nextCursor)}`}
               className="min-h-11 rounded px-2 py-3 text-sm underline focus-visible:outline-2"
             >
-              Siguiente página
+              Next page
             </Link>
           ) : null}
         </nav>

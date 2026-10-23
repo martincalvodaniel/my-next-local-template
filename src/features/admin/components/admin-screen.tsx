@@ -12,9 +12,7 @@ export async function AdminScreen({ query }: AdminScreenProps) {
   await requireAdminSession()
   const parsed = userAccessQuerySchema.safeParse(query)
   if (!parsed.success) {
-    return (
-      <ErrorBanner>La página de usuarios solicitada no es válida.</ErrorBanner>
-    )
+    return <ErrorBanner>The requested user page is invalid.</ErrorBanner>
   }
   try {
     const [users, requests] = await Promise.all([
@@ -31,9 +29,7 @@ export async function AdminScreen({ query }: AdminScreenProps) {
     )
   } catch {
     return (
-      <ErrorBanner>
-        No se ha podido cargar la lista de usuarios. Vuelve a intentarlo.
-      </ErrorBanner>
+      <ErrorBanner>Could not load the user list. Please try again.</ErrorBanner>
     )
   }
 }

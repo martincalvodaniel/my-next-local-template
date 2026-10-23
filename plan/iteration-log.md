@@ -89,3 +89,16 @@
 - UI compilada: sesión ficticia con imagen local propia cargada en ambos avatares a 390px; fallo HTTP 404 y ausencia de URL muestran iniciales sin imagen rota. Imagen correcta al volver a una sesión con URL válida; carga confirmada en escritorio a 1280px. No se ha probado un nuevo login Google interactivo ni usado una foto real del usuario.
 - Evidencia: `/private/tmp/template-social-avatar-mobile.png`, fuera de Git. Viewport restaurado y pestaña propia cerrada; servidores temporales retirados. No ha sido necesario conectar con MongoDB: sesión admin ficticia, sin cambios de autorización ni persistencia.
 - Publicación: commit/push en `int` y verificación remota al cierre; `main` intacta.
+
+## 05 — UI en inglés · 2026-10-23
+
+- Estado: `validated`.
+- Petición humana: traducir toda la interfaz al inglés.
+- Alcance: navegación, inicio, cuenta/rol, selector de tema y aviso de almacenamiento, login, solicitud/estados, administración, paginación, estados vacíos, acciones, errores y etiquetas accesibles. `html` declara `lang="en"`. Se actualizan instrucciones y decisión de idioma; la documentación de producto puede seguir en español.
+- Sin cambios de rutas, autenticación/autorización, valores de tema/operaciones ni datos persistidos. No se añade un sistema i18n ni dependencias.
+- Fuente: revisión completa del texto y búsqueda de términos/cadenas españolas en `src/**` y el harness HTTP; sin restos en UI. Se actualizan las cuatro aserciones del harness que dependían del texto anterior.
+- Verificación: lint y tipos aprobados; 37 pruebas, 0 fallos, 93 aserciones. `bun run build --webpack` aprobado con la redacción final, usando la alternativa de compilación ya documentada para el entorno. Enlaces Markdown locales y `git diff --check` aprobados.
+- Next compilado + Mongo propios: regresión HTTP completa de roles, ajustes, solicitudes, rechazo/reenvío, aprobación, decisiones obsoletas y revocación aprobada con las cadenas inglesas.
+- UI real: Settings y tema en móvil 390px sin overflow; documento `lang=en`; administración en escritorio, estado vacío, solicitud/pending, cambio de cuenta y login con error AccessDenied en inglés. Identidad y datos exclusivamente ficticios; sin login Google interactivo.
+- Evidencia fuera de Git: `/private/tmp/template-settings-english-mobile.png` y `/private/tmp/template-admin-english-desktop.png`. Viewport restaurado y pestaña propia cerrada; servidores y contenedor temporal retirados.
+- Publicación: commit/push en `int` y verificación remota al cierre; `main` intacta.

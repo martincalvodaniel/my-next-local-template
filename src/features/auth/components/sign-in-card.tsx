@@ -24,11 +24,11 @@ export function SignInCard({ callbackUrl, initialError }: SignInCardProps) {
       })
 
       if (result.error) {
-        setError("No se ha podido conectar con Google. Inténtalo de nuevo.")
+        setError("Could not connect to Google. Please try again.")
         setIsPending(false)
       }
     } catch {
-      setError("No se ha podido conectar con Google. Inténtalo de nuevo.")
+      setError("Could not connect to Google. Please try again.")
       setIsPending(false)
     }
   }
@@ -74,7 +74,7 @@ export function SignInCard({ callbackUrl, initialError }: SignInCardProps) {
               fill="#EA4335"
             />
           </svg>
-          {isPending ? "Conectando…" : "Continuar con Google"}
+          {isPending ? "Connecting…" : "Continue with Google"}
         </button>
       </section>
     </main>

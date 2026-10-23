@@ -11,7 +11,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - This repository is a reusable webapp starter. Do not infer a product domain, roadmap, infrastructure, or permissions from its Git ancestry or a neighboring repository.
 - All generated or edited code, identifiers, code comments, technical error messages, and commit messages must be in English.
 - Communicate with the user in their language. README and product planning may be in Spanish.
-- Set the product UI language in `plan/master.md` when creating an application. Keep visible copy, validation messages, accessibility text, and HTML `lang` consistent with that decision. The starter currently has mixed English/Spanish copy; do not treat that as a localization system.
+- The starter UI language is English, as recorded in `plan/master.md`. Keep all visible copy, validation messages, accessibility text, and HTML `lang="en"` in English. Change the UI language only when explicitly requested; no localization framework is installed.
 - Read applicable nested `AGENTS.md` files before editing their directories. Nested rules add scoped constraints without weakening root boundaries.
 
 ## Iteration Workflow

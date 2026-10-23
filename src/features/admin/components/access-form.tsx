@@ -31,7 +31,7 @@ export function AccessForm({ email }: AccessFormProps) {
       ) : (
         <div className="flex flex-col gap-2">
           <label htmlFor={emailId} className="text-sm font-medium">
-            Correo de Google
+            Google email address
           </label>
           <input
             id={emailId}
@@ -40,7 +40,7 @@ export function AccessForm({ email }: AccessFormProps) {
             autoComplete="email"
             required
             maxLength={254}
-            placeholder="usuario@example.com"
+            placeholder="user@example.com"
             className="min-h-11 min-w-0 rounded-lg border border-zinc-300 bg-transparent px-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:border-zinc-700"
           />
         </div>
@@ -48,14 +48,10 @@ export function AccessForm({ email }: AccessFormProps) {
       <button
         type="submit"
         disabled={pending}
-        aria-label={isRevoke ? `Revocar acceso de ${email}` : undefined}
+        aria-label={isRevoke ? `Revoke access for ${email}` : undefined}
         className="min-h-11 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:cursor-wait disabled:opacity-60 dark:border-zinc-700 dark:hover:bg-zinc-800"
       >
-        {pending
-          ? "Guardando…"
-          : isRevoke
-            ? "Revocar acceso"
-            : "Conceder acceso"}
+        {pending ? "Saving…" : isRevoke ? "Revoke access" : "Grant access"}
       </button>
       {state.status === "error" ? (
         <ErrorBanner>{state.message}</ErrorBanner>

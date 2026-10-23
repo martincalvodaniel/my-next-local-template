@@ -16,7 +16,7 @@ Completar al crear una aplicación a partir de esta base:
 | Usuarios y problema que resuelve   | Pendiente                                                                                        |
 | MVP y criterios de éxito           | Pendiente                                                                                        |
 | Fuera de alcance                   | Pendiente                                                                                        |
-| Idioma de interfaz                 | Pendiente; la base tiene `lang="es"` y textos mixtos                                             |
+| Idioma de interfaz                 | Inglés; `lang="en"`, textos visibles y accesibles en inglés                                      |
 | Acceso y roles                     | Google verificado; administradores por entorno, usuarios normales por permisos MongoDB           |
 | Modelo de datos e invariantes      | Acceso: `user_access.email` único, normalizado, con fecha de alta; dominio de producto pendiente |
 | Hosting y entornos                 | Pendiente; commit/push a `int` autorizado, promoción a `main` reservada al usuario               |
@@ -37,7 +37,7 @@ La preparación de la plantilla se registra como `00`. El siguiente trabajo de p
 
 ## Acceso implementado en 02
 
-La autorización humana redefine `ALLOWED_EMAILS` como lista de administradores. `/admin` permite dar de alta y revocar correos normales mediante acciones de servidor autorizadas y validadas con Zod. Las sesiones siguen sin adaptador persistente: se persisten permisos, no identidades ni sesiones Better Auth. Los roles se calculan en servidor por petición; la revocación deniega el siguiente acceso con cookies ya emitidas. La navegación de inicio muestra administración únicamente a administradores. La nueva interfaz usa español, manteniendo la personalización del resto de la plantilla pendiente.
+La autorización humana redefine `ALLOWED_EMAILS` como lista de administradores. `/admin` permite dar de alta y revocar correos normales mediante acciones de servidor autorizadas y validadas con Zod. Las sesiones siguen sin adaptador persistente: se persisten permisos, no identidades ni sesiones Better Auth. Los roles se calculan en servidor por petición; la revocación deniega el siguiente acceso con cookies ya emitidas. La navegación de inicio muestra administración únicamente a administradores. La interfaz completa usa inglés por la decisión humana registrada en 05.
 
 ## Solicitudes implementadas en 03
 
@@ -46,3 +46,7 @@ Una identidad Google verificada sin permiso puede crear su propia solicitud desd
 ## Navegación y ajustes implementados en 04
 
 Las rutas protegidas comparten una única navegación responsive: inferior con safe area en móvil y superior desde 768px. Ajustes es el único destino por ahora, con foto del perfil social (iniciales como respaldo) y estado activo. `/settings` muestra identidad y rol del servidor, cambio de cuenta, acceso a administración solo para administradores y selector Sistema/Claro/Oscuro. El tema es una preferencia local del navegador, validada y aplicada antes de hidratación; no introduce persistencia Mongo ni dependencias. Se toma el patrón de referencia autorizado sin copiar su dominio ni sus claves de almacenamiento.
+
+## Idioma de interfaz en 05
+
+Por petición humana, toda la UI usa inglés: navegación, cuenta, tema, acceso, solicitudes, administración, estados vacíos, errores y textos accesibles. El documento declara `lang="en"`. README y planificación pueden seguir en español; no se añade infraestructura de traducciones ni se modifican rutas, roles o valores persistidos.

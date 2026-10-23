@@ -18,14 +18,14 @@ export async function manageUserAccess(
     if ((await dependencies.getActorRole()) !== "admin") {
       return {
         status: "error",
-        message: "No tienes permisos de administración.",
+        message: "You do not have administrator permissions.",
       }
     }
     const parsed = userAccessMutationSchema.safeParse(input)
     if (!parsed.success) {
       return {
         status: "error",
-        message: "Introduce un correo válido y una operación permitida.",
+        message: "Enter a valid email address and an allowed operation.",
       }
     }
     const { email, operation } = parsed.data
@@ -33,7 +33,7 @@ export async function manageUserAccess(
       return {
         status: "error",
         message:
-          "Los administradores se gestionan mediante ALLOWED_EMAILS, no desde esta lista.",
+          "Administrators are managed through ALLOWED_EMAILS, not this list.",
       }
     }
     if (operation === "grant") await dependencies.grant(email)
@@ -41,14 +41,12 @@ export async function manageUserAccess(
     return {
       status: "success",
       message:
-        operation === "grant"
-          ? "Acceso de usuario concedido."
-          : "Acceso de usuario revocado.",
+        operation === "grant" ? "User access granted." : "User access revoked.",
     }
   } catch {
     return {
       status: "error",
-      message: "No se ha podido guardar el cambio. Inténtalo de nuevo.",
+      message: "Could not save the change. Please try again.",
     }
   }
 }

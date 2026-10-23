@@ -9,19 +9,17 @@ export async function HomeScreen() {
         <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
           My Next Template
         </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          Bienvenido
-        </h1>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight">Welcome</h1>
         <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-          Tu cuenta tiene acceso como{" "}
-          {session.role === "admin" ? "administrador" : "usuario"}.
+          Your account has access as{" "}
+          {session.role === "admin" ? "an administrator" : "a user"}.
         </p>
         {session.role === "admin" ? (
           <Link
             href="/admin"
             className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
           >
-            Administración del sitio
+            Site administration
           </Link>
         ) : null}
       </section>

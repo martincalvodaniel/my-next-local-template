@@ -71,3 +71,12 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Aceptación: imagen de sesión transmitida a ambos avatares, dimensiones estables, fallback por error y recuperación ante nueva imagen; sin cambiar permisos ni añadir dependencias.
 - Validación: lint, tipos, suite, build y navegador con imagen ficticia y fallo de carga.
 - Cierre: commit/push en `int` y verificación remota.
+
+## 05 — UI en inglés
+
+- Estado: `validated`.
+- Objetivo: traducir toda la interfaz a inglés y fijarlo como idioma de la plantilla.
+- `target_paths`: `src/features/**`, `src/components/shared/app-navigation.tsx`, `src/config/navigation.ts`, `src/app/layout.tsx`, `src/app/(auth)/auth/signin/page.tsx`, `test/access-http.ts`, `AGENTS.md`, `README.md`, `plan/**`.
+- Aceptación: textos visibles/accesibles, errores y estados en inglés, `lang="en"`; sin cambios de lógica, rutas ni valores guardados.
+- Validación: revisión completa del texto en fuente, lint, tipos, suite, build y comprobación compilada móvil/escritorio.
+- Cierre: commit/push en `int` y verificación remota.

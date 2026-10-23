@@ -46,7 +46,7 @@ Abre [localhost:3000](http://localhost:3000). La ruta `/` requiere sesión y red
 
 1. Crea el repositorio de destino y configura su remoto e historial según tus necesidades.
 2. Cambia `name` en `package.json` y actualiza `bun.lock` con Bun. Adapta la marca en `src/app/layout.tsx`, `src/features/home/components/home-screen.tsx`, `src/components/shared/app-navigation.tsx`, `src/features/auth/components/sign-in-card.tsx` y el favicon. Añade los recursos de marca propios en `public/` cuando los necesites.
-3. Define el idioma del producto y alinea `lang` y todos los textos de interfaz. Actualmente `lang` es `es` y las pantallas iniciales combinan textos en inglés y español; no hay un sistema de traducciones.
+3. La UI de la plantilla está íntegramente en inglés y declara `lang="en"`. Si cambias el idioma del producto, alinea todos los textos visibles y accesibles; no hay un sistema de traducciones.
 4. Crea secretos y credenciales OAuth propios. Configura al menos un administrador en `ALLOWED_EMAILS` y una base de datos independiente; no reutilices datos ni credenciales del repositorio de origen.
 5. Completa [el plan del producto](plan/master.md) y la iteración `01` en [el orden de entregas](plan/iterations.md) antes de desarrollar funcionalidades.
 6. Implementa el dominio bajo `src/features/<feature>/`, valida entradas con esquemas compartidos y registra colecciones e índices junto con las consultas que los necesitan.
@@ -54,19 +54,19 @@ Abre [localhost:3000](http://localhost:3000). La ruta `/` requiere sesión y red
 
 ## Navegación y ajustes
 
-Las rutas autorizadas comparten una barra inferior en móvil y superior desde 768px. Por ahora, el único destino es **Ajustes** (`/settings`), con la foto del perfil de Google y estado activo accesible. Si falta la imagen o no carga, se muestran las iniciales como respaldo. Los destinos se definen una sola vez en `src/config/navigation.ts`. La barra móvil respeta el área segura y el contenido reserva espacio para no quedar cubierto.
+Las rutas autorizadas comparten una barra inferior en móvil y superior desde 768px. Por ahora, el único destino es **Settings** (`/settings`), con la foto del perfil de Google y estado activo accesible. Si falta la imagen o no carga, se muestran las iniciales como respaldo. Los destinos se definen una sola vez en `src/config/navigation.ts`. La barra móvil respeta el área segura y el contenido reserva espacio para no quedar cubierto.
 
 Ajustes muestra el nombre, correo y rol de la sesión verificada y autorizada. Incluye cambio de cuenta y, para administradores, enlace a la gestión del sitio. La ruta mantiene las comprobaciones de autorización en servidor.
 
-El selector **Tema** ofrece Sistema, Claro y Oscuro. La preferencia se guarda en este navegador, no en MongoDB ni en la cuenta, con la clave `webapp:theme:v1`. Se aplica antes de hidratar React y se sincroniza entre pestañas del mismo origen que tengan Ajustes abierto. Sistema sigue la preferencia del dispositivo mediante CSS; si el almacenamiento está bloqueado, el cambio sigue funcionando y se informa de que no se conservará. Al reutilizar la plantilla, puedes personalizar la clave y el evento en `src/config/theme.ts`.
+El selector **Theme** ofrece Sistema, Claro y Oscuro. La preferencia se guarda en este navegador, no en MongoDB ni en la cuenta, con la clave `webapp:theme:v1`. Se aplica antes de hidratar React y se sincroniza entre pestañas del mismo origen que tengan Ajustes abierto. Sistema sigue la preferencia del dispositivo mediante CSS; si el almacenamiento está bloqueado, el cambio sigue funcionando y se informa de que no se conservará. Al reutilizar la plantilla, puedes personalizar la clave y el evento en `src/config/theme.ts`.
 
 ## Administración y acceso
 
 `ALLOWED_EMAILS` determina exclusivamente los administradores. Estos pueden entrar en `/admin` desde el enlace del inicio y conceder o revocar acceso a otros correos de Google. Los usuarios normales se guardan en `user_access`, no pueden administrar el sitio y no pueden promoverse mediante campos enviados por el navegador.
 
-Una cuenta de Google verificada sin permiso se dirige a `/auth/access`, donde puede pulsar **Solicitar acceso**, consultar si está pendiente o rechazada y cambiar de cuenta. Identificarse con Google no concede acceso al producto. La solicitud usa exclusivamente el correo de la sesión; nunca un correo enviado por el navegador. No se envía un email: la solicitud se guarda en MongoDB y aparece en **Solicitudes pendientes** dentro de `/admin`.
+Una cuenta de Google verificada sin permiso se dirige a `/auth/access`, donde puede pulsar **Request access**, consultar si está pendiente o rechazada y cambiar de cuenta. Identificarse con Google no concede acceso al producto. La solicitud usa exclusivamente el correo de la sesión; nunca un correo enviado por el navegador. No se envía un email: la solicitud se guarda en MongoDB y aparece en **Pending requests** dentro de `/admin`.
 
-Los administradores pueden **Aceptar** (concede acceso normal) o **Rechazar** (no concede acceso). La decisión solo afecta a la versión pendiente revisada; una pestaña antigua no puede aceptar una nueva solicitud creada después de un rechazo. Los envíos repetidos mientras está pendiente no crean duplicados. Tras un rechazo, la cuenta puede volver a solicitarlo; tras una aceptación, puede usar **Comprobar acceso** sin repetir el login.
+Los administradores pueden **Approve** (concede acceso normal) o **Reject** (no concede acceso). La decisión solo afecta a la versión pendiente revisada; una pestaña antigua no puede aceptar una nueva solicitud creada después de un rechazo. Los envíos repetidos mientras está pendiente no crean duplicados. Tras un rechazo, la cuenta puede volver a solicitarlo; tras una aceptación, puede usar **Check access** sin repetir el login.
 
 Los correos se recortan y convierten a minúsculas; las altas repetidas son idempotentes. La lista se pagina de 50 en 50. Los administradores no se modifican desde esta lista: se gestionan cambiando `ALLOWED_EMAILS` en el entorno y reiniciando/desplegando la aplicación según el hosting.
 

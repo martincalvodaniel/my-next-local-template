@@ -119,7 +119,7 @@ try {
   const adminResponse = await request("/admin", admin)
   assert.equal(adminResponse.status, 200)
   const adminHtml = await adminResponse.text()
-  assert.ok(adminHtml.includes("Administración del sitio"))
+  assert.ok(adminHtml.includes("Site administration"))
   const adminSettings = await request("/settings", admin)
   assert.equal(adminSettings.status, 200)
   const adminSettingsHtml = await adminSettings.text()
@@ -144,7 +144,7 @@ try {
   const home = await request("/", user)
   assert.equal(home.status, 200)
   const homeHtml = await home.text()
-  assert.ok(homeHtml.includes("usuario"))
+  assert.ok(homeHtml.includes("user"))
   assert.ok(!homeHtml.includes('href="/admin"'))
   const userSettings = await request("/settings", user)
   assert.equal(userSettings.status, 200)
@@ -182,7 +182,7 @@ try {
   const requestResponse = await request("/auth/access", outsider)
   assert.equal(requestResponse.status, 200)
   const requestHtml = await requestResponse.text()
-  assert.ok(requestHtml.includes("Solicitar acceso"))
+  assert.ok(requestHtml.includes("Request access"))
   assert.ok(
     (await request("/auth/signin", outsider)).headers
       .get("location")
@@ -227,7 +227,7 @@ try {
   )
   assert.equal(await getAccessRequestStatus(firstRequest.email), "rejected")
   const rejectedHtml = await (await request("/auth/access", outsider)).text()
-  assert.ok(rejectedHtml.includes("rechazada"))
+  assert.ok(rejectedHtml.includes("rejected"))
   await request(
     "/auth/access",
     outsider,

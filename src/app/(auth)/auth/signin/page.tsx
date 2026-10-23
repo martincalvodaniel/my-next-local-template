@@ -22,8 +22,8 @@ function getErrorMessage(error: string | undefined): string | undefined {
   }
 
   return error === "AccessDenied"
-    ? "Tu cuenta no tiene acceso a esta aplicación."
-    : "No se ha podido iniciar sesión. Inténtalo de nuevo."
+    ? "Your account does not have access to this application."
+    : "Could not sign in. Please try again."
 }
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {

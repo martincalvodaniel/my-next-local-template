@@ -30,12 +30,10 @@ export function AccountSwitchButton() {
         disabled={pending}
         className="min-h-11 rounded-lg border border-zinc-300 px-4 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 dark:border-zinc-700"
       >
-        {pending ? "Cerrando sesión…" : "Usar otra cuenta"}
+        {pending ? "Signing out…" : "Use another account"}
       </button>
       {error ? (
-        <ErrorBanner>
-          No se ha podido cerrar la sesión. Inténtalo de nuevo.
-        </ErrorBanner>
+        <ErrorBanner>Could not sign out. Please try again.</ErrorBanner>
       ) : null}
     </div>
   )

@@ -23,25 +23,25 @@ export function RequestReviewForm({
           name="decision"
           value="approve"
           disabled={pending}
-          aria-label={`Aceptar solicitud de ${request.email}`}
+          aria-label={`Approve request from ${request.email}`}
           className="min-h-11 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:opacity-60"
         >
-          Aceptar
+          Approve
         </button>
         <button
           type="submit"
           name="decision"
           value="reject"
           disabled={pending}
-          aria-label={`Rechazar solicitud de ${request.email}`}
+          aria-label={`Reject request from ${request.email}`}
           className="min-h-11 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 dark:border-zinc-700"
         >
-          Rechazar
+          Reject
         </button>
       </div>
       {pending ? (
         <p role="status" className="text-sm">
-          Guardando…
+          Saving…
         </p>
       ) : null}
       {state.status === "error" ? (

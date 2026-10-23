@@ -20,7 +20,7 @@ export function RequestAccessForm() {
         disabled={pending}
         className="min-h-11 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:opacity-60"
       >
-        {pending ? "Enviando…" : "Solicitar acceso"}
+        {pending ? "Sending…" : "Request access"}
       </button>
       {state.status === "error" ? (
         <ErrorBanner>{state.message}</ErrorBanner>

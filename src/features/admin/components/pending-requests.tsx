@@ -10,13 +10,13 @@ export function PendingRequests({
   hasCursor: boolean
 }) {
   return (
-    <section aria-label="Solicitudes pendientes" className="min-w-0">
-      <h2 className="mb-3 text-lg font-semibold">Solicitudes pendientes</h2>
+    <section aria-label="Pending requests" className="min-w-0">
+      <h2 className="mb-3 text-lg font-semibold">Pending requests</h2>
       {requests.entries.length === 0 ? (
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {hasCursor
-            ? "No hay más solicitudes en esta página."
-            : "No hay solicitudes pendientes."}
+            ? "There are no more requests on this page."
+            : "There are no pending requests."}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -31,16 +31,13 @@ export function PendingRequests({
           ))}
         </ul>
       )}
-      <nav
-        aria-label="Páginas de solicitudes"
-        className="mt-3 flex flex-wrap gap-3"
-      >
+      <nav aria-label="Request pages" className="mt-3 flex flex-wrap gap-3">
         {hasCursor ? (
           <Link
             href="/admin"
             className="min-h-11 rounded px-2 py-3 text-sm underline focus-visible:outline-2"
           >
-            Primeras solicitudes
+            First requests
           </Link>
         ) : null}
         {requests.nextCursor ? (
@@ -48,7 +45,7 @@ export function PendingRequests({
             href={`/admin?requestsAfter=${encodeURIComponent(requests.nextCursor)}`}
             className="min-h-11 rounded px-2 py-3 text-sm underline focus-visible:outline-2"
           >
-            Siguientes solicitudes
+            Next requests
           </Link>
         ) : null}
       </nav>

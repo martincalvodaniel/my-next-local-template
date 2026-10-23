@@ -19,9 +19,7 @@ export async function AccessRequestScreen() {
     )
   } catch {
     return (
-      <ErrorBanner>
-        No se ha podido consultar la solicitud. Vuelve a intentarlo.
-      </ErrorBanner>
+      <ErrorBanner>Could not load your request. Please try again.</ErrorBanner>
     )
   }
 }

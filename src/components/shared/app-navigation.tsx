@@ -15,7 +15,7 @@ export function AppNavigation({ name, email, image }: AppNavigationProps) {
   const pathname = usePathname()
   return (
     <nav
-      aria-label="Navegación principal"
+      aria-label="Main navigation"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-zinc-200 bg-white px-2 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:sticky md:top-0 md:border-t-0 md:border-b md:px-5 md:py-3 dark:border-zinc-800 dark:bg-zinc-900"
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">

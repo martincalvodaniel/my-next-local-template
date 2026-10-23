@@ -1,3 +1,3 @@
 export const navigationDestinations = [
-  { id: "settings", label: "Ajustes", href: "/settings" },
+  { id: "settings", label: "Settings", href: "/settings" },
 ] as const
