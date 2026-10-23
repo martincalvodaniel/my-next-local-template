@@ -3,10 +3,9 @@ import "server-only"
 import { betterAuth } from "better-auth"
 import { nextCookies } from "better-auth/next-js"
 import { getAuthEnv } from "@/config/env"
-import { isEmailAllowed, parseAllowedEmails } from "@/lib/auth/allowed-emails"
+import { getAccessRole } from "@/lib/auth/access"
 
 const authEnv = getAuthEnv()
-const allowedEmails = parseAllowedEmails(authEnv.allowedEmails)
 
 export const auth = betterAuth({
   baseURL: authEnv.baseUrl,
@@ -34,7 +33,7 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          if (!isEmailAllowed(user.email, allowedEmails)) {
+          if (!user.emailVerified || !(await getAccessRole(user.email))) {
             return false
           }
         },

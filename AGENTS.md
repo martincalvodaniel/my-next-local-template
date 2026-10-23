@@ -70,7 +70,7 @@ src/hooks/                       Global client hooks, created when needed
 - Implement application mutations in `features/<feature>/actions.ts` with `"use server"`; delegate persistence to the data layer.
 - Check sessions in protected layouts and authorize each data access and mutation at its server entry point. Layouts and proxy redirects alone do not protect Server Actions or API handlers.
 - The proxy only checks cookie presence. Never treat that as validated identity or permissions.
-- Keep the deny-by-default email allowlist unless the user explicitly chooses another access policy. Do not silently change cookie/session persistence, lifetimes, or authentication strategy.
+- `ALLOWED_EMAILS` defines administrators only. Normal user access is persisted in MongoDB `user_access`; deny access unless a verified session email is an administrator or has a current grant. Resolve roles on the server for each request; never trust roles submitted by a client or cached in a session cookie. Keep administration checks inside each action and protected admin layout. Do not silently change cookie/session persistence, lifetimes, or authentication strategy.
 - Only `lib/db/**` imports the MongoDB driver. Use its singleton, collection registry, and repository functions; never create connections per request.
 - Evaluate indexes whenever introducing a collection or query/sort/lookup/uniqueness pattern. Register required indexes in `src/lib/db/ensure-indexes.ts`, never ad hoc.
 - Never log or commit secrets, tokens, credentials, or personal data. `.env.example` is the only tracked environment template and must contain placeholders only.
@@ -79,7 +79,6 @@ src/hooks/                       Global client hooks, created when needed
 ## Definition of Done
 
 For code, configuration, or package changes:
-
 - Correct paths and client/server directives; no server-only imports reachable from a client component.
 - Existing components reused; new components extracted and scoped correctly.
 - Inputs validated, operations authorized, persistence routed through the singleton, and index needs evaluated where applicable.

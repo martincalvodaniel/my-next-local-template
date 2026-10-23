@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-Plantilla técnica sin dominio de negocio definido. Incluye Google OAuth con lista de acceso, cookies de sesión, layout protegido y capa MongoDB sin colecciones ni índices de negocio. El inventario y la configuración se describen en [README.md](../README.md).
+Plantilla técnica sin dominio de negocio definido. Incluye Google OAuth con cookies de sesión, administradores en `ALLOWED_EMAILS`, usuarios normales autorizados en MongoDB y administración protegida en `/admin`. La colección `user_access` tiene un índice único por correo normalizado y listado paginado. El inventario y la configuración se describen en [README.md](../README.md).
 
 La autenticación no utiliza un adaptador persistente MongoDB. No existen funcionalidades offline, sincronización, PDF ni despliegue preconfigurado. Estos elementos requieren alcance y decisiones propios si el producto los necesita.
 
@@ -10,17 +10,17 @@ La autenticación no utiliza un adaptador persistente MongoDB. No existen funcio
 
 Completar al crear una aplicación a partir de esta base:
 
-| Decisión | Estado |
-| --- | --- |
-| Nombre y objetivo | Pendiente de definición humana |
-| Usuarios y problema que resuelve | Pendiente |
-| MVP y criterios de éxito | Pendiente |
-| Fuera de alcance | Pendiente |
-| Idioma de interfaz | Pendiente; la base tiene `lang="es"` y textos mixtos |
-| Acceso y roles | Base actual: Google + lista de correos; confirmar adecuación |
-| Modelo de datos e invariantes | Pendiente |
-| Hosting y entornos | Pendiente; commit/push a `int` autorizado, promoción a `main` reservada al usuario |
-| Persistencia de identidad/sesiones | Base actual: sin adaptador persistente; evaluar según requisitos |
+| Decisión                           | Estado                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Nombre y objetivo                  | Pendiente de definición humana                                                                   |
+| Usuarios y problema que resuelve   | Pendiente                                                                                        |
+| MVP y criterios de éxito           | Pendiente                                                                                        |
+| Fuera de alcance                   | Pendiente                                                                                        |
+| Idioma de interfaz                 | Pendiente; la base tiene `lang="es"` y textos mixtos                                             |
+| Acceso y roles                     | Google verificado; administradores por entorno, usuarios normales por permisos MongoDB           |
+| Modelo de datos e invariantes      | Acceso: `user_access.email` único, normalizado, con fecha de alta; dominio de producto pendiente |
+| Hosting y entornos                 | Pendiente; commit/push a `int` autorizado, promoción a `main` reservada al usuario               |
+| Persistencia de identidad/sesiones | Base actual: sin adaptador persistente; evaluar según requisitos                                 |
 
 ## Decisiones de la plantilla
 
@@ -34,3 +34,7 @@ Completar al crear una aplicación a partir de esta base:
 ## Próximo paso
 
 La preparación de la plantilla se registra como `00`. El siguiente trabajo de producto es `01`: concretar el MVP a partir de una petición humana. No implementar un dominio de ejemplo ni configurar servicios antes de esa definición.
+
+## Acceso implementado en 02
+
+La autorización humana redefine `ALLOWED_EMAILS` como lista de administradores. `/admin` permite dar de alta y revocar correos normales mediante acciones de servidor autorizadas y validadas con Zod. Las sesiones siguen sin adaptador persistente: se persisten permisos, no identidades ni sesiones Better Auth. Los roles se calculan en servidor por petición; la revocación deniega el siguiente acceso con cookies ya emitidas. La navegación de inicio muestra administración únicamente a administradores. La nueva interfaz usa español, manteniendo la personalización del resto de la plantilla pendiente.

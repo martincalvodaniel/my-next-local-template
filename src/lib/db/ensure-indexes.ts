@@ -16,9 +16,14 @@ export interface IndexSpec {
   options: CreateIndexesOptions & { name: string }
 }
 
-// Add index specifications here alongside the feature that introduces the
-// collection or query pattern. Do not add speculative indexes.
-export const INDEX_SPECS: readonly IndexSpec[] = []
+// The unique email index also supports membership lookups and cursor pagination.
+export const INDEX_SPECS: readonly IndexSpec[] = [
+  {
+    collection: "user_access",
+    keys: { email: 1 },
+    options: { name: "email_unique", unique: true },
+  },
+]
 
 export function validateIndexSpecs(specs: readonly IndexSpec[]): void {
   const namesByCollection = new Map<string, Set<string>>()

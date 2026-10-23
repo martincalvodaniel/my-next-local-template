@@ -31,3 +31,13 @@ Las siguientes iteraciones se definen a partir del producto real. No hay una hoj
 - Aceptación: regla consistente en todos los documentos vigentes; documentación incluida en el cierre obligatorio; verificación del SHA remoto; recuperación explícita ante fallo; `main` exclusivamente humano.
 - Validación: enlaces locales, consistencia de reglas y `git diff --check`. Sin cambios de código que requieran repetir la suite.
 - Publicación: commit y push de esta entrega en `int`; resultado y SHA comunicados al cierre.
+
+## 02 — Administración y acceso de usuarios
+
+- Estado: `validated`.
+- Objetivo: reservar `ALLOWED_EMAILS` a administradores y gestionar usuarios normales desde `/admin` con persistencia MongoDB.
+- `target_paths`: `src/lib/auth/**`, `src/lib/db/**`, `src/schemas/**`, `src/types/**`, `src/features/admin/**`, `src/features/home/**`, `src/app/(dashboard)/**`, `.env.example`, `README.md`, `AGENTS.md`, `plan/**`, `test/**`.
+- Dependencias: autenticación Google existente y autorización humana explícita del nuevo modelo de acceso.
+- Aceptación: administradores solo desde entorno; usuarios normales con alta/listado/revocación persistente; correos normalizados e índice único; denegación por defecto; autorización de servidor en cada operación y ruta; revocación aplicada en el siguiente acceso incluso con sesión abierta; errores saneados y UI accesible.
+- Validación: pruebas de permisos/contratos/mutaciones, evaluación de índice y persistencia, lint, tipos, build y revisión UI móvil/escritorio. Distinguir integración real de dobles de prueba.
+- Cierre: commit y push en `int`, verificación del SHA remoto; `main` exclusivamente humano.

@@ -3,20 +3,18 @@ import "server-only"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { cache } from "react"
-import { getAuthEnv } from "@/config/env"
-import { isEmailAllowed, parseAllowedEmails } from "@/lib/auth/allowed-emails"
+import { getAccessRole } from "@/lib/auth/access"
 import { auth } from "@/lib/auth/auth"
-
-const allowedEmails = parseAllowedEmails(getAuthEnv().allowedEmails)
 
 export const getAuthorizedSession = cache(async () => {
   const session = await auth.api.getSession({ headers: await headers() })
 
-  if (!session?.user.email) {
+  if (!session?.user.email || !session.user.emailVerified) {
     return null
   }
 
-  return isEmailAllowed(session.user.email, allowedEmails) ? session : null
+  const role = await getAccessRole(session.user.email)
+  return role ? { ...session, role } : null
 })
 
 export async function requireAuthorizedSession() {
@@ -26,5 +24,11 @@ export async function requireAuthorizedSession() {
     redirect("/auth/signin")
   }
 
+  return session
+}
+
+export async function requireAdminSession() {
+  const session = await requireAuthorizedSession()
+  if (session.role !== "admin") redirect("/")
   return session
 }

@@ -27,3 +27,20 @@
 - Validación: enlaces Markdown locales, consistencia de instrucciones vigentes y `git diff --check` aprobados. No se repiten pruebas de aplicación porque no cambia código ni configuración ejecutable.
 - Publicación: commit/push a `origin/int` autorizados como cierre de esta entrega; verificar el SHA remoto y comunicar el resultado real al usuario, sin anticipar su hash en este registro.
 - Siguiente paso de producto: `01`, pendiente de requisitos; integración a `main` exclusivamente humana.
+
+## 02 — Administración y acceso de usuarios · 2026-10-23
+
+- Estado: `validated`.
+- Instrucción humana: `ALLOWED_EMAILS` concede administración; otros correos acceden como usuarios normales mediante permisos persistidos en MongoDB.
+- Implementación: rol calculado en servidor por petición a partir de sesión con correo verificado; administradores desde entorno y permisos normales desde `user_access`. Las cookies y el modelo sin adaptador persistente de Better Auth se conservan. No se guardan roles en cookies.
+- `/admin`: layout y lectura autorizados, formulario de alta, listado paginado de 50 entradas y revocación. Acciones autorizadas individualmente, Zod compartido, rechazo de cambios a administradores y errores saneados. Enlace desde inicio solo para administradores.
+- Datos: correo normalizado a minúsculas y sin espacios exteriores, alta idempotente y registro de fecha. Índice central `email_unique` para unicidad, búsqueda de membresía y paginación por correo. Sin dependencias nuevas.
+- Pruebas unitarias: `bun run test`, 23 aprobadas, 0 fallos, 44 aserciones. Incluyen permisos, revocación, entradas inválidas, normalización, intento de promoción y fallos de persistencia/sesión.
+- MongoDB real aislado: `src/lib/db/user-access.integration.ts` aprobado en contenedor temporal propio. Altas concurrentes, normalización, persistencia tras cerrar/reabrir conexión, revocación idempotente, dos páginas sin duplicados e índice único real.
+- Next compilado + Mongo aislado: `test/access-http.ts` aprobado con cookies firmadas exclusivamente para la aplicación de prueba. Rutas anónima/admin/usuario/correo no verificado, altas y revocaciones mediante Server Actions reales, rechazo de escalada y denegación con la misma cookie tras revocar. No se ha realizado login interactivo con Google.
+- UI real compilada: alta y revocación por navegador aprobadas con correo ficticio. Móvil de 390px sin desbordamiento (scrollWidth 390px) y botones de 44px; escritorio de 1280px con contenido máximo 768px. Capturas fuera de Git: `/private/tmp/template-admin-mobile.png` y `/private/tmp/template-admin-desktop.png`. Viewport restaurado y pestaña propia cerrada.
+- Validación estática: `bun run lint` aprobado sin errores ni warnings; quedan cinco avisos informativos de estilo de pruebas preexistentes en archivos no modificados. `bun run type-check` y `git diff --check` aprobados; enlaces Markdown locales comprobados.
+- Build: `bun run build --webpack` aprobado. El comando por defecto con Turbopack falla en este entorno al intentar abrir un puerto interno (Operation not permitted), también tras pedir ejecución fuera del sandbox. No se cambia el bundler predeterminado del proyecto para ocultar esta limitación del entorno.
+- Limpieza: servidor de Next, gateway de identidad ficticia y contenedor Mongo propios retirados; no se han usado bases ni credenciales del usuario para las pruebas de acceso.
+- Publicación: cierre mediante commit/push de esta iteración en `int` y verificación remota al finalizar; `main` sin cambios. El SHA real se comunica en el cierre, sin anticiparlo aquí.
+- Próximo paso: revisión humana de `int`; el producto de destino sigue pendiente de definición en `01`.

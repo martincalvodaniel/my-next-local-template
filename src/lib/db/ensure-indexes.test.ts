@@ -1,6 +1,6 @@
 import "server-only"
 
-import { describe, expect, test } from "bun:test"
+import { describe, expect, it } from "bun:test"
 import type { IndexSpec } from "./ensure-indexes"
 import {
   ensureIndexes,
@@ -10,11 +10,21 @@ import {
 } from "./ensure-indexes"
 
 describe("MongoDB index specifications", () => {
-  test("the application index registry is valid", () => {
+  it("the application index registry is valid", () => {
     expect(() => validateIndexSpecs(INDEX_SPECS)).not.toThrow()
   })
 
-  test("rejects duplicate names within a collection", () => {
+  it("registers unique normalized email access and supports email ordering", () => {
+    expect(
+      INDEX_SPECS.find((spec) => spec.collection === "user_access")
+    ).toEqual({
+      collection: "user_access",
+      keys: { email: 1 },
+      options: { name: "email_unique", unique: true },
+    })
+  })
+
+  it("rejects duplicate names within a collection", () => {
     const specs: IndexSpec[] = [
       {
         collection: "items",
@@ -33,7 +43,7 @@ describe("MongoDB index specifications", () => {
     )
   })
 
-  test("allows the same index name in different collections", () => {
+  it("allows the same index name in different collections", () => {
     const specs: IndexSpec[] = [
       {
         collection: "items",
@@ -50,7 +60,7 @@ describe("MongoDB index specifications", () => {
     expect(() => validateIndexSpecs(specs)).not.toThrow()
   })
 
-  test("creates every registered index with its options", async () => {
+  it("creates every registered index with its options", async () => {
     const calls: Array<{ collection: string; name: string }> = []
     const database: IndexDatabase = {
       collection: (collection) => ({
